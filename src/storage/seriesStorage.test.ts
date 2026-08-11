@@ -7,6 +7,7 @@ const sampleSeries: NewSeries = {
   equipmentType: 'machine',
   weightKg: 60,
   reps: 10,
+  setsCount: 3,
   performedAt: '2026-08-11T10:00:00.000Z',
 };
 

@@ -6,6 +6,7 @@ export interface Series {
   equipmentType: EquipmentType;
   weightKg: number | null;
   reps: number | null;
+  setsCount: number;
   performedAt: string;
 }
 
