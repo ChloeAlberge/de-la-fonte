@@ -4,7 +4,7 @@
 
 ### Epic : Suivi des séances
 
-- **US1** — En tant qu'utilisateur, je veux enregistrer une série (exercice, type d'équipement, poids, répétitions, date) afin de garder une trace de ma séance.
+- **US1** ✅ *(terminée)* — En tant qu'utilisateur, je veux enregistrer une série (exercice, type d'équipement, poids, répétitions, nombre de séries identiques, date) afin de garder une trace de ma séance.
 - **US2** — En tant qu'utilisateur, je veux consulter l'historique de mes séries afin de suivre mon activité dans le temps.
 - **US3** — En tant qu'utilisateur, je veux filtrer l'historique par exercice afin de voir l'évolution de mes performances sur un exercice précis.
 - **US4** — En tant qu'utilisateur, je veux voir la fréquence d'utilisation de chaque exercice, y compris par type d'équipement (machine / poids libre / poids du corps), afin d'identifier mes habitudes d'entraînement.
@@ -18,7 +18,15 @@
 ### Epic : Visualisation & statistiques
 
 - **US8** — En tant qu'utilisateur, je veux visualiser un graphique de progression du poids dans le temps, par exercice, afin de suivre ma progression visuellement.
-- **US9** — En tant qu'utilisateur, je veux voir des statistiques globales (volume soulevé, répétitions au poids du corps, séances par semaine, exercice le plus pratiqué), y compris par type d'équipement, afin d'avoir une vue d'ensemble de mon activité.
+- **US9** — En tant qu'utilisateur, je veux voir des statistiques globales (volume soulevé — poids × reps × nombre de séries —, répétitions au poids du corps, séances par semaine, exercice le plus pratiqué), y compris par type d'équipement, afin d'avoir une vue d'ensemble de mon activité.
+
+## À prioriser (identifiée en cours de route, pas encore planifiée dans le MVP)
+
+### Epic : Cardio
+
+- **US10** — En tant qu'utilisateur, je veux enregistrer une séance de cardio (exercice, distance en km, durée en minutes, date) afin de suivre mes activités qui ne relèvent pas de la musculation.
+  - Nécessite un refactoring du modèle de données vers une union discriminée (`StrengthSeries` / `CardioSeries`) — voir `docs/JOURNAL-DE-CONCEPTION.md`, point 14.
+  - À traiter dans sa propre branche, après stabilisation d'US1.
 
 ## Backlog V2 (hors périmètre MVP)
 
