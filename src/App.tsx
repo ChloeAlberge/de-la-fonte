@@ -44,7 +44,7 @@ function App() {
         onChange={setSelectedExercise}
       />
 
-      <SeriesList series={displayedSeries} />
+      <SeriesList series={displayedSeries} onSeriesChanged={refreshSeries} />
     </>
   );
 }
