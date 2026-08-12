@@ -1,6 +1,6 @@
-import type { Series, NewSeries } from '../models/series';
+import type { Series, NewSeries } from "../models/series";
 
-const STORAGE_KEY = 'de-la-fonte:series';
+const STORAGE_KEY = "de-la-fonte:series";
 
 export function getAllSeries(): Series[] {
   const raw = localStorage.getItem(STORAGE_KEY);
@@ -29,7 +29,10 @@ export function updateSeries(id: string, data: Partial<NewSeries>): Series {
     throw new Error(`Series with id ${id} not found`);
   }
 
-  const updated: Series = { ...all[index], ...data };
+  // Assertion assumée : on part du principe que `data` ne mélange jamais
+  // des champs d'un autre `kind` que celui de la série existante.
+  const updated = { ...all[index], ...data } as Series;
+
   all[index] = updated;
   localStorage.setItem(STORAGE_KEY, JSON.stringify(all));
 

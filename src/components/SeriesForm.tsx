@@ -1,4 +1,5 @@
 import { useState, type FormEvent } from "react";
+import { getActiveSession } from '../storage/sessionStorage';
 import type { EquipmentType, NewSeries } from "../models/series";
 import { addSeries } from "../storage/seriesStorage";
 
@@ -25,12 +26,14 @@ export function SeriesForm({ onSeriesAdded }: SeriesFormProps) {
     event.preventDefault();
 
     const newSeries: NewSeries = {
+      kind: "strength",
       exerciseName,
       equipmentType,
       weightKg: weightKg === "" ? null : Number(weightKg),
       reps: reps === "" ? null : Number(reps),
       setsCount: Number(setsCount),
       performedAt: new Date().toISOString(),
+      sessionId: getActiveSession()?.id ?? null,
     };
 
     addSeries(newSeries);

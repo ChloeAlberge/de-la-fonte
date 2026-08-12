@@ -205,6 +205,20 @@ function startSession(): Session {
 
 ---
 
+## 17. Limite connue — désynchronisation multi-onglets
+
+**Contexte** — `ActiveSessionBar` lit `getActiveSession()` une seule fois au montage (`useState(() => ...)`). Si un onglet est ouvert **avant** qu'une séance ne soit démarrée dans un autre onglet, il continue d'afficher le bouton "Démarrer" sans savoir qu'une séance est déjà active ailleurs — cliquer dessus déclenche alors l'erreur `Une séance est déjà en cours` (`storage/sessionStorage.ts`), sans message utilisateur dédié pour l'instant.
+
+**Cause** — `localStorage` est partagé entre tous les onglets d'un même domaine, mais React ne réagit pas automatiquement à un changement fait dans un **autre** onglet — il n'y a pas d'écoute en temps réel mise en place.
+
+**Décision** — Non corrigé pour l'instant, noté comme limite connue plutôt que traité.
+
+**Justification** — Usage prévu : un seul appareil, une appli installée en PWA (comportement standalone qui réutilise l'instance existante plutôt que d'en ouvrir une nouvelle). Le risque réel est faible, et l'impact d'une occurrence reste un message d'erreur en console, pas une perte ou incohérence de données.
+
+**Piste d'amélioration (backlog)** — Écouter l'événement `storage` du navigateur (déclenché automatiquement dans les autres onglets quand `localStorage` change) pour resynchroniser `ActiveSessionBar` en temps réel. Non priorisé.
+
+---
+
 ## Décisions en attente
 
 - Détail des seuils exacts de déblocage par succès (ex: "10 séances" vs "50 séries")
