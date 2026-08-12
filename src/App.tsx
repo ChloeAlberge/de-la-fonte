@@ -3,16 +3,24 @@ import { SeriesForm } from './components/SeriesForm';
 import { CardioForm } from './components/CardioForm';
 import { ActiveSessionBar } from './components/ActiveSessionBar';
 import { SeriesList } from './components/SeriesList';
+import { ExerciseFilter } from './components/ExerciseFilter';
 import { getAllSeries } from './storage/seriesStorage';
+import { getUniqueExerciseNames, filterByExercise } from './stats/seriesStats';
 import './App.css';
 
 function App() {
   const [allSeries, setAllSeries] = useState(() => getAllSeries());
   const [entryType, setEntryType] = useState<'strength' | 'cardio'>('strength');
+  const [selectedExercise, setSelectedExercise] = useState<string | null>(null);
 
   function refreshSeries() {
     setAllSeries(getAllSeries());
   }
+
+  const exerciseNames = getUniqueExerciseNames(allSeries);
+  const displayedSeries = selectedExercise
+    ? filterByExercise(allSeries, selectedExercise)
+    : allSeries;
 
   return (
     <>
@@ -30,7 +38,13 @@ function App() {
         <CardioForm onSeriesAdded={refreshSeries} />
       )}
 
-      <SeriesList series={allSeries} />
+      <ExerciseFilter
+        exerciseNames={exerciseNames}
+        selected={selectedExercise}
+        onChange={setSelectedExercise}
+      />
+
+      <SeriesList series={displayedSeries} />
     </>
   );
 }
