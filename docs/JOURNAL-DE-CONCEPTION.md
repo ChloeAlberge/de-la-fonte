@@ -229,7 +229,7 @@ function startSession(): Session {
 | US2 | Consulter l'historique | ✅ |
 | US3 | Filtrer par exercice | ✅ |
 | US4 | Fréquence par exercice | X |
-| US5 | Corriger/supprimer une série | X |
+| US5 | Corriger/supprimer une série | ✅ |
 | US6 | Installer l'appli (PWA) | X |
 | US7 | Fonctionnement hors ligne | X |
 | US8 | Graphique de progression | X |
@@ -260,6 +260,22 @@ function startSession(): Session {
 **`ExerciseFilter.tsx`** — Composant contrôlé sans état interne : la valeur sélectionnée vit dans `App.tsx` (qui en a aussi besoin pour filtrer `SeriesList`), le composant ne fait que refléter/notifier. `selected: string | null` converti en `''` côté `<select>` HTML natif (qui ne comprend pas `null`), et inversement à la sortie.
 
 **Valeurs dérivées, pas de nouvel état** — `exerciseNames` et `displayedSeries` recalculés à chaque rendu de `App.tsx` à partir de `allSeries`/`selectedExercise`, sans `useState`/`useEffect` dédié — même principe que `isBodyweight` dans `SeriesForm` (point 11), appliqué à des données dérivées plus complexes.
+
+**Statut** — ✅ Terminée.
+
+---
+
+## 20. US5 — Édition et suppression, mise en place des tests de composants React
+
+**Décision (édition inline)** — Chaque `SeriesListItem` gère son propre état `isEditing` local, indépendant des autres lignes. Basculement entre affichage et `SeriesEditForm` via rendu conditionnel, plutôt qu'une page/modale séparée — reste cohérent avec la simplicité du MVP.
+
+**Décision (suppression)** — Confirmation via `window.confirm` (natif navigateur), pas de modale personnalisée pour l'instant. Compromis assumé : non stylable, mais suffisant et rapide à mettre en place pour un usage solo.
+
+**Point de compréhension notable — `Partial<T>` sur une union est homomorphique.** `NewSeries` est une union (`Omit<StrengthSeries,'id'> | Omit<CardioSeries,'id'>`). `Partial<NewSeries>` aurait pu être compris comme limité aux champs communs aux deux variantes ; en réalité, TypeScript **distribue** automatiquement `Partial` (comme `Pick`, `Required`, `Readonly`) sur chaque membre de l'union séparément. Conséquence pratique : `updateSeries(id, { weightKg: 65 })` et `updateSeries(id, { durationMin: 20 })` sont tous deux valides sans code supplémentaire, chacun vérifié contre la bonne variante.
+
+**Décision (tests de composants)** — Ajout de `@testing-library/react`, `@testing-library/jest-dom`, `@testing-library/user-event`, jusque-là absents (seule la couche storage/stats était testée). Nécessite `globals: true` dans la config Vitest — sans cette option, `jest-dom` échoue (`expect is not defined`) car il s'attend à un `expect` global, que Vitest n'expose pas par défaut contrairement à Jest.
+
+**Approche de test retenue** — `vi.fn()` pour espionner les callbacks (`onSeriesChanged`), `vi.spyOn(window, 'confirm')` pour simuler la confirmation sans jamais ouvrir de vraie boîte de dialogue pendant les tests, `userEvent` (plutôt que `fireEvent`) pour des interactions utilisateur plus réalistes.
 
 **Statut** — ✅ Terminée.
 
