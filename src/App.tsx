@@ -2,21 +2,22 @@ import { useState } from 'react';
 import { SeriesForm } from './components/SeriesForm';
 import { CardioForm } from './components/CardioForm';
 import { ActiveSessionBar } from './components/ActiveSessionBar';
+import { SeriesList } from './components/SeriesList';
 import { getAllSeries } from './storage/seriesStorage';
 import './App.css';
 
 function App() {
-  const [seriesCount, setSeriesCount] = useState(() => getAllSeries().length);
+  const [allSeries, setAllSeries] = useState(() => getAllSeries());
   const [entryType, setEntryType] = useState<'strength' | 'cardio'>('strength');
 
-  function refreshCount() {
-    setSeriesCount(getAllSeries().length);
+  function refreshSeries() {
+    setAllSeries(getAllSeries());
   }
 
   return (
     <>
       <h1>De la Fonte</h1>
-      <ActiveSessionBar onSessionChange={refreshCount} />
+      <ActiveSessionBar onSessionChange={refreshSeries} />
 
       <div>
         <button onClick={() => setEntryType('strength')}>Musculation</button>
@@ -24,12 +25,12 @@ function App() {
       </div>
 
       {entryType === 'strength' ? (
-        <SeriesForm onSeriesAdded={refreshCount} />
+        <SeriesForm onSeriesAdded={refreshSeries} />
       ) : (
-        <CardioForm onSeriesAdded={refreshCount} />
+        <CardioForm onSeriesAdded={refreshSeries} />
       )}
 
-      <p>{seriesCount} série(s) enregistrée(s) — (affichage temporaire, US2 fera le vrai historique)</p>
+      <SeriesList series={allSeries} />
     </>
   );
 }
