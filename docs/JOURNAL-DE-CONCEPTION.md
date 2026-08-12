@@ -228,12 +228,12 @@ function startSession(): Session {
 | US11 | Suivi de séance (Session) | ✅ |
 | US2 | Consulter l'historique | ✅ |
 | US3 | Filtrer par exercice | ✅ |
-| US4 | Fréquence par exercice | X |
+| US4 | Fréquence par exercice | ✅ |
 | US5 | Corriger/supprimer une série | ✅ |
-| US6 | Installer l'appli (PWA) | X |
-| US7 | Fonctionnement hors ligne | X |
-| US8 | Graphique de progression | X |
-| US9 | Statistiques globales | X |
+| US6 | Installer l'appli (PWA) | ⏳ |
+| US7 | Fonctionnement hors ligne | ⏳ |
+| US8 | Graphique de progression | ⏳ |
+| US9 | Statistiques globales | ⏳ |
 
 ---
 
@@ -276,6 +276,20 @@ function startSession(): Session {
 **Décision (tests de composants)** — Ajout de `@testing-library/react`, `@testing-library/jest-dom`, `@testing-library/user-event`, jusque-là absents (seule la couche storage/stats était testée). Nécessite `globals: true` dans la config Vitest — sans cette option, `jest-dom` échoue (`expect is not defined`) car il s'attend à un `expect` global, que Vitest n'expose pas par défaut contrairement à Jest.
 
 **Approche de test retenue** — `vi.fn()` pour espionner les callbacks (`onSeriesChanged`), `vi.spyOn(window, 'confirm')` pour simuler la confirmation sans jamais ouvrir de vraie boîte de dialogue pendant les tests, `userEvent` (plutôt que `fireEvent`) pour des interactions utilisateur plus réalistes.
+
+**Statut** — ✅ Terminée.
+
+---
+
+## 21. US4 — Fréquence par exercice et par équipement
+
+**Décision (double mesure)** — Deux informations distinctes calculées ensemble plutôt qu'une seule métrique de "fréquence" : `seriesCount` (nombre brut de séries) et `distinctDaysCount` (nombre de jours calendaires distincts). Nécessaire car les deux répondent à des questions différentes ("combien de fois ai-je fait cet exercice" vs "sur combien de séances distinctes").
+
+**Calcul des jours distincts** — `performedAt.slice(0, 10)` tronque la string ISO à sa partie date (`"2026-08-12"`), puis dédoublonnage via `Set` — même technique que `getUniqueExerciseNames` (point 19), appliquée aux dates plutôt qu'aux noms d'exercice. Deux séries le même jour à des heures différentes comptent pour un seul jour.
+
+**Fréquence par équipement — filtrage du cardio** — `equipmentType` n'existe que sur `StrengthSeries`. Utilisation d'une fonction de garde de type (`s is Extract<Series, { kind: 'strength' }>`) pour écarter le cardio avant tout traitement, plutôt qu'une vérification `if` répétée dans la boucle. Testé explicitement (`computeFrequencyByEquipmentType` ignore les séries cardio).
+
+**`FrequencyView` branché sur `allSeries`, pas `displayedSeries`** — la fréquence doit refléter l'activité globale, indépendamment du filtre par exercice actif dans `ExerciseFilter` ; la brancher sur les données déjà filtrées aurait rendu les chiffres trompeurs.
 
 **Statut** — ✅ Terminée.
 
