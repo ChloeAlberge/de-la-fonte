@@ -25,12 +25,14 @@ export function SeriesForm({ onSeriesAdded }: SeriesFormProps) {
     event.preventDefault();
 
     const newSeries: NewSeries = {
+      kind: "strength",
       exerciseName,
       equipmentType,
       weightKg: weightKg === "" ? null : Number(weightKg),
       reps: reps === "" ? null : Number(reps),
       setsCount: Number(setsCount),
       performedAt: new Date().toISOString(),
+      sessionId: null,
     };
 
     addSeries(newSeries);
