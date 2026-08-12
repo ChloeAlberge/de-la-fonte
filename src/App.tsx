@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { SeriesForm } from './components/SeriesForm';
+import { ActiveSessionBar } from './components/ActiveSessionBar';
 import { getAllSeries } from './storage/seriesStorage';
 import './App.css';
 
@@ -13,6 +14,7 @@ function App() {
   return (
     <>
       <h1>De la Fonte</h1>
+      <ActiveSessionBar onSessionChange={refreshCount} />
       <SeriesForm onSeriesAdded={refreshCount} />
       <p>{seriesCount} série(s) enregistrée(s) — (affichage temporaire, US2 fera le vrai historique)</p>
     </>
