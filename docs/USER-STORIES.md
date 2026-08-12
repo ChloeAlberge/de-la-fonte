@@ -20,15 +20,28 @@
 - **US8** — En tant qu'utilisateur, je veux visualiser un graphique de progression du poids dans le temps, par exercice, afin de suivre ma progression visuellement.
 - **US9** — En tant qu'utilisateur, je veux voir des statistiques globales (volume soulevé, répétitions au poids du corps, séances par semaine, exercice le plus pratiqué), y compris par type d'équipement, afin d'avoir une vue d'ensemble de mon activité.
 
-## À prioriser (identifiées en cours de route, pas encore planifiées dans le MVP)
+## En cours de planification (formalisées, pas encore codées)
 
-### Epic : Cardio
+### Epic : Cardio & suivi de séance
 
 - **US10** — En tant qu'utilisateur, je veux enregistrer une séance de cardio (exercice, distance en km, durée en minutes, date) afin de suivre mes activités qui ne relèvent pas de la musculation.
-  - Nécessite un refactoring vers une union discriminée (`StrengthSeries` / `CardioSeries`) — voir journal, point 14.
-  - À traiter dans sa propre branche, après stabilisation d'US1.
+  - **Critères d'acceptation :**
+    - [ ] Le modèle de données distingue `StrengthSeries` et `CardioSeries` via une union discriminée (champ `kind`)
+    - [ ] Le formulaire propose une saisie adaptée au cardio (exercice, distance, durée) sans les champs muscu (poids, reps, équipement, sets)
+    - [ ] Les entrées cardio sont persistées dans la même couche storage que la musculation
+  - **Conception détaillée :** journal, point 14.
 
-## Backlog V2 (hors périmètre MVP)
+- **US11** — En tant qu'utilisateur, je veux démarrer et terminer une séance afin que mes séries (muscu et cardio) soient regroupées et que je puisse suivre la durée réelle de mon entraînement.
+  - **Critères d'acceptation :**
+    - [ ] Entité `Session` (`startedAt`, `endedAt`)
+    - [ ] Bouton "Démarrer une séance" / "Terminer la séance"
+    - [ ] Une seule séance active à la fois (erreur si tentative d'en démarrer une deuxième)
+    - [ ] Chaque `Series` (muscu ou cardio) peut être rattachée à la séance active via `sessionId`, ou rester `null` (saisie libre, hors séance)
+    - [ ] Une séance jamais terminée reste "en cours" indéfiniment — pas de fermeture automatique (choix assumé)
+  - **Conception détaillée :** journal, point 15.
+  - **Note de méthode :** US10 et US11 sont traitées dans une branche commune (`feature/us10-us11-model-refactor`), exception au principe "une branche = une US", justifiée par le couplage fort des deux modèles (`Series` et `Session` évoluent ensemble).
+
+## Backlog V2 (hors périmètre MVP, pas encore priorisé)
 
 ### Suivi enrichi
 
@@ -36,14 +49,13 @@
 - Segmentation `bodyPart` (haut du corps / bas du corps) — nécessaire pour le système de succès (voir épic Gamification)
 - Détection automatique de record personnel (PR)
 - Objectifs par exercice (ex: atteindre un poids cible)
-- Concept de **Session/Séance** — regrouper plusieurs séries dans un bloc temporel (début/fin), pour suivre la durée réelle d'un entraînement de musculation. Conception détaillée disponible au journal, point 15 (modèle `Session`, règle "une seule séance active", saisie libre a posteriori conservée).
 
 ### Epic : Gamification — succès à débloquer
 
-- Système de cartes/succès à débloquer façon Steam, selon des jalons (nombre de séances, fréquence, partie du corps, durée d'entraînement)
+- Système de cartes/succès à débloquer façon Steam, selon des jalons (nombre de séances, fréquence, partie du corps, durée d'entraînement via US11)
 - Roster de 4 personnages originaux (pixel art) : bas du corps, haut du corps, vétéran (longévité), personnage mystère (régularité, révélé progressivement)
-- Dépend de `bodyPart` et du concept de `Session` (durée) ci-dessus
-- Conception détaillée disponible au journal, point 16 — seuils de déblocage précis encore à définir
+- Dépend de `bodyPart` et de `Session` (US11)
+- Conception détaillée : journal, point 16 — seuils de déblocage précis encore à définir
 
 ### Autres
 
