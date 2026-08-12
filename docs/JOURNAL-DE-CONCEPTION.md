@@ -110,7 +110,7 @@ export interface Series {
 
 **Décision (séquencement)** — Cardio traité comme User Story séparée (US10), après stabilisation d'US1, pour ne pas rouvrir un modèle en cours de merge.
 
-**Statut** — Non planifiée dans le MVP initial. Voir `docs/USER-STORIES.md`.
+**Statut** — ✅ Terminée (US10). Union discriminée implémentée dans `models/series.ts`, formulaire cardio (`CardioForm.tsx`) opérationnel, persistance validée dans `localStorage`.
 
 ---
 
@@ -181,7 +181,7 @@ function startSession(): Session {
 - `SeriesForm.tsx` — doit lire `getActiveSession()` pour préremplir `sessionId` automatiquement si une séance est en cours
 - Nouveau composant `ActiveSessionBar.tsx` — bandeau "Séance en cours" avec Démarrer/Terminer
 
-**Statut** — Conception validée, non implémentée. Rattachée au backlog V2 (epic Gamification/Succès), voir `docs/USER-STORIES.md`.
+**Statut** — ✅ Terminée (US11). `models/session.ts`, `storage/sessionStorage.ts` (avec contrainte "une seule séance active" testée), et `ActiveSessionBar.tsx` (Démarrer/Terminer) implémentés et branchés sur `SeriesForm`/`CardioForm` via `sessionId`.
 
 ---
 
@@ -216,6 +216,24 @@ function startSession(): Session {
 **Justification** — Usage prévu : un seul appareil, une appli installée en PWA (comportement standalone qui réutilise l'instance existante plutôt que d'en ouvrir une nouvelle). Le risque réel est faible, et l'impact d'une occurrence reste un message d'erreur en console, pas une perte ou incohérence de données.
 
 **Piste d'amélioration (backlog)** — Écouter l'événement `storage` du navigateur (déclenché automatiquement dans les autres onglets quand `localStorage` change) pour resynchroniser `ActiveSessionBar` en temps réel. Non priorisé.
+
+---
+
+## État d'avancement (au 12 août 2026)
+
+| US | Sujet | Statut |
+|---|---|---|
+| US1 | Enregistrer une série (muscu) | ✅ |
+| US10 | Enregistrer une séance de cardio | ✅ |
+| US11 | Suivi de séance (Session) | ✅ |
+| US2 | Consulter l'historique | ⏳ |
+| US3 | Filtrer par exercice | ⏳ |
+| US4 | Fréquence par exercice | ⏳ |
+| US5 | Corriger/supprimer une série | ⏳ |
+| US6 | Installer l'appli (PWA) | ⏳ |
+| US7 | Fonctionnement hors ligne | ⏳ |
+| US8 | Graphique de progression | ⏳ |
+| US9 | Statistiques globales | ⏳ |
 
 ---
 
