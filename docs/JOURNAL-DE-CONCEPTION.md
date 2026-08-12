@@ -226,14 +226,42 @@ function startSession(): Session {
 | US1 | Enregistrer une série (muscu) | ✅ |
 | US10 | Enregistrer une séance de cardio | ✅ |
 | US11 | Suivi de séance (Session) | ✅ |
-| US2 | Consulter l'historique | ⏳ |
-| US3 | Filtrer par exercice | ⏳ |
-| US4 | Fréquence par exercice | ⏳ |
-| US5 | Corriger/supprimer une série | ⏳ |
-| US6 | Installer l'appli (PWA) | ⏳ |
-| US7 | Fonctionnement hors ligne | ⏳ |
-| US8 | Graphique de progression | ⏳ |
-| US9 | Statistiques globales | ⏳ |
+| US2 | Consulter l'historique | ✅ |
+| US3 | Filtrer par exercice | ✅ |
+| US4 | Fréquence par exercice | X |
+| US5 | Corriger/supprimer une série | X |
+| US6 | Installer l'appli (PWA) | X |
+| US7 | Fonctionnement hors ligne | X |
+| US8 | Graphique de progression | X |
+| US9 | Statistiques globales | X |
+
+---
+
+## 18. US2 — Consultation de l'historique
+
+**Décision** — `SeriesList.tsx` reçoit le tableau `Series[]` en prop plutôt que de lire `storage` lui-même ; `App.tsx` reste seul responsable de charger/recharger les données.
+
+**Justification** — Garde le composant "bête" (affichage pur), évite de dupliquer la logique de lecture à plusieurs endroits si d'autres composants ont un jour besoin des mêmes données.
+
+**Tri** — Décroissant par `performedAt` (le plus récent en premier), calculé sur une **copie** du tableau (`[...series].sort(...)`) pour ne jamais muter la prop reçue.
+
+**Affichage par type** — Un sous-composant `SeriesListItem` centralise la discrimination `kind` (`if (entry.kind === 'strength')`) pour éviter de disperser cette logique dans plusieurs endroits du rendu.
+
+**Statut** — ✅ Terminée.
+
+---
+
+## 19. US3 — Filtre par exercice et démarrage de la couche `stats/`
+
+**Décision** — Création de `stats/seriesStats.ts`, première fonction de cette couche (`getUniqueExerciseNames`, `filterByExercise`). Ne dépend que de `models/`, jamais de `storage/` — reçoit des données déjà chargées, ce qui la rend testable sans mock ni `localStorage.clear()`.
+
+**Dédoublonnage** — Passage par un `Set` JS (élimine les doublons nativement) plutôt qu'une boucle manuelle, puis retour en tableau trié alphabétiquement pour un affichage prévisible dans le sélecteur.
+
+**`ExerciseFilter.tsx`** — Composant contrôlé sans état interne : la valeur sélectionnée vit dans `App.tsx` (qui en a aussi besoin pour filtrer `SeriesList`), le composant ne fait que refléter/notifier. `selected: string | null` converti en `''` côté `<select>` HTML natif (qui ne comprend pas `null`), et inversement à la sortie.
+
+**Valeurs dérivées, pas de nouvel état** — `exerciseNames` et `displayedSeries` recalculés à chaque rendu de `App.tsx` à partir de `allSeries`/`selectedExercise`, sans `useState`/`useEffect` dédié — même principe que `isBodyweight` dans `SeriesForm` (point 11), appliqué à des données dérivées plus complexes.
+
+**Statut** — ✅ Terminée.
 
 ---
 
