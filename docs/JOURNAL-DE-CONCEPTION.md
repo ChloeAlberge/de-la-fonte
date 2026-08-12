@@ -6,109 +6,67 @@ Ce document trace les questionnements, options envisagées et décisions prises 
 
 ## 1. Type d'application
 
-**Question** — Appli web classique, PWA installable, ou appli native ?
-
-**Décision** — PWA.
-
-**Justification** — Installable comme une vraie appli, fonctionne hors ligne (utile en salle de sport où le réseau est mauvais), sans passer par un store ni apprendre un langage natif séparé.
+**Décision** — PWA. Installable sur l'écran d'accueil, fonctionne hors ligne, sans store ni langage natif séparé.
 
 ---
 
 ## 2. Framework front-end
 
-**Question** — Quel framework pour construire l'interface ?
-
-**Options envisagées** — Vanilla JS, React, Vue, Angular, Svelte.
-
 **Décision** — React, sans framework "complet" imposant une architecture (donc pas Angular).
 
-**Justification** — Angular impose sa propre architecture (Dependency Injection, modules, structure de dossiers) : l'utiliser aurait démontré une capacité à *respecter* un cadre existant, pas à en *concevoir* un. Concevoir sa propre organisation en couches (storage / logique / UI) avec React est plus formateur pour une compétence de conception.
+**Justification** — Concevoir sa propre organisation en couches (storage / logique / UI) est plus formateur pour une compétence de conception que de suivre une architecture déjà imposée par le framework.
 
 ---
 
 ## 3. Langage
 
-**Question** — JavaScript ou TypeScript ?
-
-**Décision** — TypeScript.
-
-**Justification** — Impose un typage explicite des contrats de données entre les couches, ce qui structure la réflexion de conception et réduit une classe entière de bugs.
+**Décision** — TypeScript, pour le typage explicite des contrats de données entre les couches.
 
 ---
 
 ## 4. Outil de build
 
-**Question** — Vite ou Next.js ?
-
-**Décision** — Vite.
-
-**Justification** — Next.js résout des problèmes qu'on n'a pas ici : SEO, temps de chargement initial d'un site public. Le SSR ajoute de la complexité (hydratation) qui entre en friction avec l'architecture offline-first qu'on veut construire.
+**Décision** — Vite plutôt que Next.js. Pas de SSR nécessaire (PWA offline-first, pas de SEO à gérer), Vite donne une SPA pure cohérente avec l'absence de backend.
 
 ---
 
 ## 5. Architecture en couches
 
-**Décision** — Séparation en 4 couches :
-
-```
-UI (composants React)
-   ↓
-Logique dérivée / statistiques
-   ↓
-Storage (accès aux données)
-   ↓
-Models (types partagés)
-```
-
-**Justification** — Isoler la couche de stockage permet de faire évoluer la persistance (ex: `localStorage` → API en V2) sans toucher à l'UI ni à la logique métier.
+**Décision** — 4 couches : `models` → `storage` → `stats` → `UI`, pour isoler la persistance (migrable en V2) de la logique métier et de l'affichage.
 
 ---
 
 ## 6. Stockage des données
 
-**Question** — Comment et où stocker les séries ?
-
-**Options envisagées** — `localStorage`, `IndexedDB`, backend distant.
-
-**Décision** — `localStorage` pour le MVP, backend explicitement écarté pour cette phase.
-
-**Justification** — Usage solo, un seul appareil. `localStorage` suffit largement. Un backend n'apporterait aucune valeur tant que le besoin de synchronisation multi-appareils ne se confirme pas (principe **YAGNI**).
+**Décision** — `localStorage` pour le MVP, backend explicitement écarté (principe YAGNI). Usage solo, un seul appareil, pas de besoin de synchronisation actuellement.
 
 ---
 
 ## 7. Périmètre du MVP — User Stories
 
-**Décision** — Voir `docs/USER-STORIES.md` pour la liste complète.
-
-**Point notable** — Les statistiques et la visualisation ont été initialement classées en "nice-to-have V2", puis remontées dans le périmètre MVP après réflexion.
+**Décision** — Voir `docs/USER-STORIES.md`. Les statistiques/visualisation, initialement V2, ont été remontées dans le MVP.
 
 ---
 
 ## 8. Gestion de projet
 
-**Décision** — Dépôt GitHub géré manuellement. Stratégie de branches : une branche par feature (`feature/us1-...`), fusionnée dans `main` via Pull Request (GitHub Flow). Une Issue GitHub par User Story, fermée automatiquement via `Closes #N` dans la description de la PR.
-
-**Justification** — Choix délibéré de faire les manipulations soi-même pour ancrer la pratique Git/GitHub. Une branche "conception" permanente a été envisagée puis écartée : une branche est faite pour être fusionnée, pas pour héberger indéfiniment de la documentation.
+**Décision** — Dépôt GitHub géré manuellement, GitHub Flow (une branche par feature, PR avec `Closes #N`), une Issue par User Story.
 
 ---
 
 ## 9. Nom du projet
 
-**Décision** — "De la Fonte" (nom d'affichage) / `de-la-fonte` (slug technique).
+**Décision** — "De la Fonte" / `de-la-fonte` (slug technique).
 
 ---
 
 ## 10. Généralisation au-delà des machines
 
-**Question** — Le modèle initial ne couvrait que les machines (`machineName`). Comment intégrer les exercices sans machine (squats, fentes, curls...) ?
-
-**Décision** — Ajout d'un `equipmentType` (`'machine' | 'poids_libre' | 'poids_du_corps'`), en plus du renommage `exerciseName`.
-
-**Conséquence directe** — Le poids (`weightKg`) devient optionnel (`number | null`), un exercice au poids du corps pouvant n'avoir aucune charge externe.
+**Décision** — Ajout d'un `equipmentType` (`'machine' | 'poids_libre' | 'poids_du_corps'`) et renommage `machineName` → `exerciseName`. Conséquence : `weightKg` devient `number | null`.
 
 ---
 
-## 11. Modèle de données (version musculation)
+## 11. Modèle de données (version initiale musculation)
 
 ```typescript
 export type EquipmentType = 'machine' | 'poids_libre' | 'poids_du_corps';
@@ -122,89 +80,135 @@ export interface Series {
   setsCount: number;
   performedAt: string;
 }
-
-export type NewSeries = Omit<Series, 'id'>;
 ```
 
-**Pourquoi `performedAt` en `string` (ISO) et pas en `Date`** — `localStorage` ne stocke que du texte. Un objet `Date` sérialisé en JSON redevient une string à la lecture : le typer honnêtement en `string` dès le départ évite un type qui mentirait sur ce qui survit réellement au stockage.
+*(Ce modèle est révisé au point 15 avec l'ajout de `sessionId` et l'union discriminée du point 14.)*
 
-### Découpage des couches
-
-```
-src/
-├── models/series.ts             → Series, NewSeries, EquipmentType
-├── storage/seriesStorage.ts     → getAllSeries, addSeries, updateSeries, deleteSeries
-├── stats/seriesStats.ts         → fonctions dérivées (à venir)
-├── components/
-│   ├── SeriesForm.tsx           → US1 ✅
-│   ├── SeriesList.tsx           → US2, US5
-│   ├── ExerciseFilter.tsx       → US3
-│   ├── FrequencyView.tsx        → US4
-│   ├── ProgressChart.tsx        → US8
-│   └── StatsSummary.tsx         → US9
-├── App.tsx
-└── main.tsx
-```
+**`performedAt` en `string` (ISO)** — `localStorage` ne stocke que du texte ; un type honnête évite de mentir sur ce qui survit à la sérialisation.
 
 ---
 
 ## 12. Calcul du volume total (US9) avec le poids du corps
 
-**Décision** — Résultat à deux composantes distinctes plutôt qu'un chiffre unique (kg et reps ne peuvent pas s'additionner) :
-
-```typescript
-interface VolumeResult {
-  weightedVolumeKg: number;   // Σ (poids × reps × setsCount) pour machine / poids libre
-  bodyweightReps: number;     // Σ (reps × setsCount) pour poids du corps
-}
-```
-
-**Note (mise à jour point 13)** — la formule intègre désormais `setsCount` en facteur, voir ci-dessous.
+**Décision** — Deux composantes distinctes (`weightedVolumeKg`, `bodyweightReps`) plutôt qu'un total unique — kg et reps ne s'additionnent pas.
 
 ---
 
 ## 13. Ajout du nombre de séries identiques (`setsCount`)
 
-**Question** — Une séance normale comprend plusieurs sets identiques par exercice (ex: 3×10 à 60kg). Fallait-il créer une entrée `Series` par set, ou permettre de regrouper des sets identiques en une seule saisie ?
+**Décision** — Champ `setsCount: number` (jamais `null`, défaut `1`) pour regrouper des sets identiques en une saisie ("3×10"), plutôt qu'une entrée par set.
 
-**Options envisagées**
-- **Option A** — Ajouter `setsCount` au modèle : une entrée représente N sets identiques (même poids, mêmes reps)
-- **Option B** — Garder une entrée = un set, optimiser la saisie plus tard (ex: fonctionnalité "dupliquer le dernier set")
-
-**Décision** — Option A : ajout du champ `setsCount: number` (jamais `null`, défaut `1`) à l'interface `Series`.
-
-**Justification** — Correspond à comment une séance se pense naturellement ("3x10"), réduit la saisie répétitive. Compromis assumé : si le poids ou les reps varient d'un set à l'autre (fréquent en pratique réelle, ex: dernier set plus léger), plusieurs entrées restent nécessaires — `setsCount` ne modélise que des sets strictement identiques.
-
-**Conséquence sur les stats (US9, pas encore codé)** — le calcul du volume devient `poids × reps × setsCount` (et non plus `poids × reps` seul).
-
-**Répercussion dans le code** — modèle (`models/series.ts`), test (`seriesStorage.test.ts`), formulaire (`SeriesForm.tsx`, nouveau champ + état `setsCount`). Couche `storage` inchangée (elle ne connaît pas la forme précise de `Series`, juste qu'elle la persiste telle quelle).
+**Compromis assumé** — Ne fonctionne que pour des sets strictement identiques (même poids, mêmes reps). Impacte le calcul du volume : `poids × reps × setsCount`.
 
 ---
 
 ## 14. Support du cardio — modélisation et séquencement
 
-**Question** — Le modèle actuel (`Series`) ne couvre que la musculation. Comment intégrer des séances de cardio (distance, durée), qui n'ont ni poids, ni reps, ni sets au sens musculation ?
+**Décision (modélisation)** — Union discriminée `StrengthSeries | CardioSeries` (champ discriminant `kind`), plutôt que des champs optionnels ajoutés à un seul `Series`.
 
-**Options envisagées pour la modélisation**
-- **Option A** — Ajouter des champs optionnels (`distanceKm`, `durationMin`) directement sur `Series`
-- **Option B** — Union discriminée : deux interfaces distinctes (`StrengthSeries` / `CardioSeries`) réunies par un type `Series = StrengthSeries | CardioSeries`, avec un champ discriminant (`kind`)
+**Justification** — Empêche à la compilation les combinaisons incohérentes (ex: `reps` rempli sur une entrée cardio).
 
-**Décision (modélisation)** — Option B, union discriminée.
+**Décision (séquencement)** — Cardio traité comme User Story séparée (US10), après stabilisation d'US1, pour ne pas rouvrir un modèle en cours de merge.
 
-**Justification** — Avec l'option A, rien n'empêche techniquement de remplir `reps` et `distanceKm` sur la même entrée, une incohérence que TypeScript ne peut pas détecter. L'union discriminée rend ces combinaisons invalides impossibles à la compilation : accéder à `series.reps` sur une entrée de type `'cardio'` devient une erreur de typage, pas une valeur `null` silencieusement ignorée.
+**Statut** — Non planifiée dans le MVP initial. Voir `docs/USER-STORIES.md`.
 
-**Décision (séquencement)** — Le cardio n'est pas intégré dans US1. US1 reste limitée à la musculation, mergée telle quelle. Le cardio devient une **User Story séparée (US10)**, traitée dans sa propre branche une fois US1 stabilisée.
+---
 
-**Justification** — Éviter de rouvrir et complexifier un modèle en cours de stabilisation. Le refactoring vers une union discriminée impactera toutes les couches déjà écrites (`storage`, `SeriesForm`, futurs `stats`) — mérite sa propre itération plutôt qu'un ajout de dernière minute sur US1.
+## 15. Concept de Session (séance) — durée et regroupement
 
-**Statut** — Non planifiée dans le MVP initial (US1-US9). À prioriser : voir `docs/USER-STORIES.md`.
+**Contexte** — Née d'une réflexion sur le système de succès (point 16) : certains succès envisagés dépendent de la **durée** d'un entraînement de musculation. Or le modèle `Series` n'a qu'un horodatage ponctuel par set, aucune notion de bloc temporel regroupant plusieurs séries.
+
+**Distinction posée avec le cardio** — La durée d'une séance de cardio (`CardioSeries.durationMin`, point 14) est indépendante et déjà couverte : une entrée cardio a intrinsèquement une durée. Le trou concerne uniquement la musculation, où la durée n'existe qu'au niveau d'un regroupement de séries.
+
+**Décisions prises (par questionnement direct)**
+
+| Question | Décision |
+|---|---|
+| Saisie d'une série sans séance active ? | Autorisée — les deux cas coexistent : séance active OU saisie libre a posteriori (`sessionId: null`) |
+| Séance jamais terminée (oubli) ? | Reste manuel — pas de fermeture automatique par délai, gérée par l'utilisateur |
+| Le cardio peut-il appartenir à une Session ? | Oui — une séance de cardio peut être rattachée à une `Session`, comme la musculation |
+
+**Modèle retenu**
+
+```typescript
+interface BaseSeries {
+  id: string;
+  exerciseName: string;
+  performedAt: string;
+  sessionId: string | null;   // null = saisie libre, hors séance
+}
+
+interface StrengthSeries extends BaseSeries {
+  kind: 'strength';
+  equipmentType: EquipmentType;
+  weightKg: number | null;
+  reps: number | null;
+  setsCount: number;
+}
+
+interface CardioSeries extends BaseSeries {
+  kind: 'cardio';
+  distanceKm: number | null;
+  durationMin: number;
+}
+
+type Series = StrengthSeries | CardioSeries;
+
+interface Session {
+  id: string;
+  startedAt: string;
+  endedAt: string | null;   // null = en cours (ou oubliée, cf. décision ci-dessus)
+}
+```
+
+**Pourquoi le lien est porté par `Series` (`sessionId`) et non l'inverse (`Session.seriesIds`)** — relation un-vers-plusieurs classique (une séance contient plusieurs séries, chaque série appartient à au plus une séance). Porter la référence côté `Series` évite une double source de vérité qui pourrait se désynchroniser.
+
+**Règle métier ajoutée : une seule séance active à la fois** — rien dans le modèle n'empêche techniquement de démarrer une deuxième séance pendant qu'une première reste ouverte. Cette contrainte est donc appliquée dans la couche `storage`, pas dans le typage :
+
+```typescript
+function startSession(): Session {
+  if (getActiveSession()) {
+    throw new Error('Une séance est déjà en cours');
+  }
+  // ...
+}
+```
+
+**Répercussions architecturales**
+- `models/session.ts` (nouveau) — `Session`
+- `storage/sessionStorage.ts` (nouveau) — `getAllSessions`, `startSession`, `endSession`, `getActiveSession`
+- `stats/sessionStats.ts` (nouveau ou fusionné) — `computeSessionDurationMinutes`, `getSeriesForSession`
+- `SeriesForm.tsx` — doit lire `getActiveSession()` pour préremplir `sessionId` automatiquement si une séance est en cours
+- Nouveau composant `ActiveSessionBar.tsx` — bandeau "Séance en cours" avec Démarrer/Terminer
+
+**Statut** — Conception validée, non implémentée. Rattachée au backlog V2 (epic Gamification/Succès), voir `docs/USER-STORIES.md`.
+
+---
+
+## 16. Système de succès (gamification) — concept
+
+**Origine** — Idée inspirée des succès Steam : débloquer des cartes à collectionner façon pixel art selon des jalons d'entraînement.
+
+**Décision (personnages)** — Écarté : concevoir un personnage visant délibérément la ressemblance avec une personne réelle identifiable (même non nommée), pour des raisons de droit à l'image. Retenu : un roster de personnages **originaux**, inspirés d'archétypes génériques du genre (bodybuilder, athlète) plutôt que d'individus précis.
+
+**Roster envisagé (4 personnages)**
+- Personnage bas du corps — jambes/fessiers très musclés
+- Personnage haut du corps — bras/dos développés, jambes fines ("don't skip leg day")
+- Le vétéran — bodybuilder archétype années 80, jalons de longévité/ancienneté
+- Le mystère — capuche, genre non identifiable au départ, révélation progressive liée à la régularité dans le temps
+
+**Décision (segmentation par partie du corps)** — Ajout d'un axe `bodyPart` (`'haut_du_corps' | 'bas_du_corps'`), simple et binaire (pas de granularité par groupe musculaire). Rejoint et affine l'item déjà présent au backlog V2 ("entité Exercice avec catégorie").
+
+**Décision (durée)** — A entraîné la conception du concept de `Session` (point 15), pour permettre des succès basés sur la durée d'un entraînement de musculation, pas seulement de cardio.
+
+**Statut** — Concept exploré en profondeur (roster, déclencheurs, contrainte technique `bodyPart`/`Session`), mais **aucune implémentation**. Reste un item du backlog V2 — voir `docs/USER-STORIES.md` pour le suivi.
 
 ---
 
 ## Décisions en attente
 
-- Structure de test détaillée pour les couches restantes (`SeriesForm`, futurs composants UI)
+- Détail des seuils exacts de déblocage par succès (ex: "10 séances" vs "50 séries")
+- Où stocker `bodyPart` : sur `Series` directement, ou sur une future entité `Exercise` dédiée (lié à l'item backlog existant)
 - Détail du pipeline CI (GitHub Actions) — à documenter à sa mise en place
-- Design détaillé de l'union discriminée `StrengthSeries`/`CardioSeries` (US10) — à faire au démarrage de cette US
-- Création des Issues GitHub pour les US restantes (US2 à US9, US10) — faites au fur et à mesure, pas toutes à l'avance
-- Découpage éventuel en ADR individuels si le nombre de décisions futures le justifie
+- Création des Issues GitHub pour les US restantes — faites au fur et à mesure
+- Journaliser (leçon de méthode) l'incident de commit oublié avant merge sur US1 — noté, pas encore fait
