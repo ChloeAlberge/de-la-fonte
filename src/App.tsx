@@ -8,6 +8,7 @@ import { getAllSeries } from './storage/seriesStorage';
 import { getUniqueExerciseNames, filterByExercise } from './stats/seriesStats';
 import { FrequencyView } from './components/FrequencyView';
 import { StatsSummary } from './components/StatsSummary';
+import { ProgressChart } from './components/ProgressChart';
 import './App.css';
 
 function App() {
@@ -45,6 +46,8 @@ function App() {
         selected={selectedExercise}
         onChange={setSelectedExercise}
       />
+
+      <ProgressChart series={allSeries} exerciseName={selectedExercise} />
 
       <SeriesList series={displayedSeries} onSeriesChanged={refreshSeries} />
       <FrequencyView series={allSeries} />
