@@ -8,6 +8,7 @@ import {
   computeCurrentWeekSessionCount,
   computeMostUsedExercise,
   computeTotalVolume,
+  computeProgressionForExercise,
 } from "./seriesStats";
 import type { Series } from "../models/series";
 
@@ -224,5 +225,44 @@ describe('computeAverageWeeklySessionCount', () => {
 
     expect(result).toBeGreaterThan(0);
     expect(Number.isFinite(result)).toBe(true);
+  });
+});
+
+describe('computeProgressionForExercise', () => {
+  it('renvoie un tableau vide si aucune série pour cet exercice', () => {
+    expect(computeProgressionForExercise([legPress], 'Squat')).toEqual([]);
+  });
+
+  it('exclut le cardio même si le nom d’exercice correspond', () => {
+    const fakeCardio: Series = { ...running, exerciseName: 'LegPress' };
+
+    const result = computeProgressionForExercise([fakeCardio], 'LegPress');
+
+    expect(result).toEqual([]);
+  });
+
+  it('exclut les séries au poids du corps sans poids connu', () => {
+    const bodyweight: Series = {
+      id: '10',
+      kind: 'strength',
+      exerciseName: 'Squat',
+      equipmentType: 'poids_du_corps',
+      weightKg: null,
+      reps: 15,
+      setsCount: 3,
+      performedAt: '2026-08-12T09:00:00.000Z',
+      sessionId: null,
+    };
+
+    expect(computeProgressionForExercise([bodyweight], 'Squat')).toEqual([]);
+  });
+
+  it('trie les points chronologiquement, du plus ancien au plus récent', () => {
+    const result = computeProgressionForExercise([legPress, legPressAgain], 'LegPress');
+
+    expect(result).toEqual([
+      { date: '2026-08-11', weightKg: 91 },
+      { date: '2026-08-12', weightKg: 91 },
+    ]);
   });
 });
