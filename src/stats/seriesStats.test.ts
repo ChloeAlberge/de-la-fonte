@@ -4,6 +4,10 @@ import {
   computeFrequencyByEquipmentType,
   getUniqueExerciseNames,
   filterByExercise,
+  computeAverageWeeklySessionCount,
+  computeCurrentWeekSessionCount,
+  computeMostUsedExercise,
+  computeTotalVolume,
 } from "./seriesStats";
 import type { Series } from "../models/series";
 
@@ -140,5 +144,85 @@ describe("filterByExercise", () => {
         distinctDaysCount: 1,
       });
     });
+  });
+});
+
+describe('computeMostUsedExercise', () => {
+  it('renvoie null si aucune série', () => {
+    expect(computeMostUsedExercise([])).toBeNull();
+  });
+
+  it('renvoie l’exercice avec le plus de séries', () => {
+    const result = computeMostUsedExercise([legPress, legPressAgain, running]);
+
+    expect(result).toBe('LegPress');
+  });
+});
+
+describe('computeTotalVolume', () => {
+  it('renvoie un volume nul si aucune série', () => {
+    expect(computeTotalVolume([])).toEqual({ weightedVolumeKg: 0, bodyweightReps: 0 });
+  });
+
+  it('calcule le volume pondéré (poids × reps × setsCount)', () => {
+    // legPress : 91kg × 10 reps × 3 sets = 2730
+    const result = computeTotalVolume([legPress]);
+
+    expect(result.weightedVolumeKg).toBe(2730);
+    expect(result.bodyweightReps).toBe(0);
+  });
+
+  it('ignore le cardio dans le calcul du volume', () => {
+    const result = computeTotalVolume([legPress, running]);
+
+    expect(result.weightedVolumeKg).toBe(2730);
+  });
+
+  it('comptabilise le poids du corps séparément', () => {
+    const bodyweightSquat: Series = {
+      id: '6',
+      kind: 'strength',
+      exerciseName: 'Squat au poids du corps',
+      equipmentType: 'poids_du_corps',
+      weightKg: null,
+      reps: 15,
+      setsCount: 3,
+      performedAt: '2026-08-12T09:00:00.000Z',
+      sessionId: null,
+    };
+
+    const result = computeTotalVolume([bodyweightSquat]);
+
+    expect(result.weightedVolumeKg).toBe(0);
+    expect(result.bodyweightReps).toBe(45); // 15 reps × 3 sets
+  });
+});
+
+describe('computeCurrentWeekSessionCount', () => {
+  it('renvoie 0 si aucune série cette semaine', () => {
+    const oldSeries: Series = { ...legPress, id: '7', performedAt: '2020-01-01T10:00:00.000Z' };
+
+    expect(computeCurrentWeekSessionCount([oldSeries])).toBe(0);
+  });
+
+  it('compte les séances de la semaine en cours', () => {
+    const today: Series = { ...legPress, id: '8', performedAt: new Date().toISOString() };
+
+    expect(computeCurrentWeekSessionCount([today])).toBe(1);
+  });
+});
+
+describe('computeAverageWeeklySessionCount', () => {
+  it('renvoie 0 si aucune série', () => {
+    expect(computeAverageWeeklySessionCount([])).toBe(0);
+  });
+
+  it('ne divise pas par zéro pour une seule journée', () => {
+    const today: Series = { ...legPress, id: '9', performedAt: new Date().toISOString() };
+
+    const result = computeAverageWeeklySessionCount([today]);
+
+    expect(result).toBeGreaterThan(0);
+    expect(Number.isFinite(result)).toBe(true);
   });
 });
