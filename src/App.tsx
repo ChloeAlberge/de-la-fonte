@@ -7,6 +7,7 @@ import { ExerciseFilter } from './components/ExerciseFilter';
 import { getAllSeries } from './storage/seriesStorage';
 import { getUniqueExerciseNames, filterByExercise } from './stats/seriesStats';
 import { FrequencyView } from './components/FrequencyView';
+import { StatsSummary } from './components/StatsSummary';
 import './App.css';
 
 function App() {
@@ -47,6 +48,7 @@ function App() {
 
       <SeriesList series={displayedSeries} onSeriesChanged={refreshSeries} />
       <FrequencyView series={allSeries} />
+      <StatsSummary series={allSeries} />
     </>
   );
 }

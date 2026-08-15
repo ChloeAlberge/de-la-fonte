@@ -55,3 +55,69 @@ export function computeFrequencyByEquipmentType(
 
   return result;
 }
+
+export function computeAverageWeeklySessionCount(series: Series[]): number {
+  if (series.length === 0) return 0;
+
+  const uniqueDays = new Set(series.map((s) => s.performedAt.slice(0, 10)));
+  const sortedDates = Array.from(uniqueDays).sort();
+
+  const firstDate = new Date(sortedDates[0]);
+  const lastDate = new Date();
+
+  const msPerWeek = 1000 * 60 * 60 * 24 * 7;
+  const weeksElapsed = Math.max(1, (lastDate.getTime() - firstDate.getTime()) / msPerWeek);
+
+  return uniqueDays.size / weeksElapsed;
+}
+
+export function computeCurrentWeekSessionCount(series: Series[]): number {
+  const now = new Date();
+  const dayOfWeek = now.getDay() === 0 ? 7 : now.getDay(); // dimanche = 7, pas 0
+  const startOfWeek = new Date(now);
+  startOfWeek.setHours(0, 0, 0, 0);
+  startOfWeek.setDate(now.getDate() - (dayOfWeek - 1));
+
+  const daysThisWeek = series
+    .filter((s) => new Date(s.performedAt) >= startOfWeek)
+    .map((s) => s.performedAt.slice(0, 10));
+
+  return new Set(daysThisWeek).size;
+}
+
+export function computeMostUsedExercise(series: Series[]): string | null {
+  const frequencies = computeFrequencyByExercise(series);
+  const entries = Object.entries(frequencies);
+
+  if (entries.length === 0) return null;
+
+  const [mostUsed] = entries.reduce((best, current) =>
+    current[1].seriesCount > best[1].seriesCount ? current : best
+  );
+
+  return mostUsed;
+}
+
+export interface VolumeResult {
+  weightedVolumeKg: number;
+  bodyweightReps: number;
+}
+
+export function computeTotalVolume(series: Series[]): VolumeResult {
+  const strengthOnly = series.filter(
+    (s): s is Extract<Series, { kind: 'strength' }> => s.kind === 'strength'
+  );
+
+  let weightedVolumeKg = 0;
+  let bodyweightReps = 0;
+
+  for (const entry of strengthOnly) {
+    if (entry.weightKg !== null && entry.reps !== null) {
+      weightedVolumeKg += entry.weightKg * entry.reps * entry.setsCount;
+    } else if (entry.equipmentType === 'poids_du_corps' && entry.reps !== null) {
+      bodyweightReps += entry.reps * entry.setsCount;
+    }
+  }
+
+  return { weightedVolumeKg, bodyweightReps };
+}
