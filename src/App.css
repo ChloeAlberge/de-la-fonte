@@ -181,3 +181,21 @@ button {
     grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
   }
 }
+
+.series-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.series-edit-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.series-edit-form input,
+.series-edit-form select {
+  min-height: 44px;
+  padding: 0.4rem 0.6rem;
+}
