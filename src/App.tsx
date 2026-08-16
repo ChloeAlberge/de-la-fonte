@@ -1,19 +1,19 @@
-import { useState } from 'react';
-import { SeriesForm } from './components/SeriesForm';
-import { CardioForm } from './components/CardioForm';
-import { ActiveSessionBar } from './components/ActiveSessionBar';
-import { SeriesList } from './components/SeriesList';
-import { ExerciseFilter } from './components/ExerciseFilter';
-import { getAllSeries } from './storage/seriesStorage';
-import { getUniqueExerciseNames, filterByExercise } from './stats/seriesStats';
-import { FrequencyView } from './components/FrequencyView';
-import { StatsSummary } from './components/StatsSummary';
-import { ProgressChart } from './components/ProgressChart';
-import './App.css';
+import { useState } from "react";
+import { SeriesForm } from "./components/SeriesForm";
+import { CardioForm } from "./components/CardioForm";
+import { ActiveSessionBar } from "./components/ActiveSessionBar";
+import { SeriesList } from "./components/SeriesList";
+import { ExerciseFilter } from "./components/ExerciseFilter";
+import { getAllSeries } from "./storage/seriesStorage";
+import { getUniqueExerciseNames, filterByExercise } from "./stats/seriesStats";
+import { FrequencyView } from "./components/FrequencyView";
+import { StatsSummary } from "./components/StatsSummary";
+import { ProgressChart } from "./components/ProgressChart";
+import "./App.css";
 
 function App() {
   const [allSeries, setAllSeries] = useState(() => getAllSeries());
-  const [entryType, setEntryType] = useState<'strength' | 'cardio'>('strength');
+  const [entryType, setEntryType] = useState<"strength" | "cardio">("strength");
   const [selectedExercise, setSelectedExercise] = useState<string | null>(null);
 
   function refreshSeries() {
@@ -27,15 +27,17 @@ function App() {
 
   return (
     <>
-      <h1>De la Fonte</h1>
+      <header className="app-header">
+        <h1>De la Fonte</h1>
+      </header>
       <ActiveSessionBar onSessionChange={refreshSeries} />
 
       <div>
-        <button onClick={() => setEntryType('strength')}>Musculation</button>
-        <button onClick={() => setEntryType('cardio')}>Cardio</button>
+        <button onClick={() => setEntryType("strength")}>Musculation</button>
+        <button onClick={() => setEntryType("cardio")}>Cardio</button>
       </div>
 
-      {entryType === 'strength' ? (
+      {entryType === "strength" ? (
         <SeriesForm onSeriesAdded={refreshSeries} />
       ) : (
         <CardioForm onSeriesAdded={refreshSeries} />
