@@ -219,7 +219,7 @@ function startSession(): Session {
 
 ---
 
-## État d'avancement (au 15 août 2026)
+## État d'avancement (au 12 août 2026)
 
 | US | Sujet | Statut |
 |---|---|---|
@@ -230,8 +230,8 @@ function startSession(): Session {
 | US3 | Filtrer par exercice | ✅ |
 | US4 | Fréquence par exercice | ✅ |
 | US5 | Corriger/supprimer une série | ✅ |
-| US6 | Installer l'appli (PWA) | x |
-| US7 | Fonctionnement hors ligne | x |
+| US6 | Installer l'appli (PWA) | ⏳ |
+| US7 | Fonctionnement hors ligne | ⏳ |
 | US8 | Graphique de progression | ✅ |
 | US9 | Statistiques globales | ✅ |
 
@@ -318,6 +318,90 @@ function startSession(): Session {
 **Note de méthode** : Un travail sur l'interface visuelle n'était pas dans les User Stories initiales (US1-US11 couvrent uniquement la logique/données). Sera formalisé comme un nouvel item (à numéroter, ex. US12) dans `docs/USER-STORIES.md` le moment venu, pour garder la traçabilité même si ce n'était pas prévu dès la conception initiale.
 
 **Statut** : Non commencé.
+
+---
+
+## 24. US12 : identité visuelle, epic et cadrage
+
+**Contexte** : le MVP fonctionnel (US1-US5, US8-US11) était complet mais sans aucun style, rendant l'appli peu lisible et peu utilisable en pratique (point 23). Décision de traiter ce chantier avant US6/US7 (PWA/installation).
+
+**Brief retenu, à l'issue d'un questionnaire de cadrage** :
+- Ambiance : ludique, rétro années 80, cyberpunk (référence explicite : Cyberpunk 2077)
+- Thème sombre avec touches néon
+- Palette : `#27b0ff` (cyan), `#6e00ff` (violet), `#0b1026` (fond secondaire), `#020309` (fond principal), chrome/acier en complément. Rouge et marron explicitement exclus
+- Typographie : caractère fort pour les titres, très lisible pour le reste
+- Priorité affichée : la progression visuelle prime sur les champs de saisie, qui passent en modale plutôt qu'en flux direct
+- Palette et univers de Patrick (mascotte pixel art, backlog gamification) explicitement connectés au style de l'appli, pas isolés
+
+**Décision (contraste modales/dashboard)** : les modales de saisie adoptent un style radicalement différent, pastiche de terminal informatique années 80 (phosphore vert monochrome, VT323, bordures ASCII), plutôt que de prolonger l'esthétique néon. Rupture volontaire pour marquer un changement de mode ("écran de saisie" vs "tableau de bord"). L'historique reste dans l'esthétique HUD néon malgré tout, la lisibilité de la donnée déjà enregistrée primant sur la cohérence stylistique stricte.
+
+**Décision (découpage en sous-Issues)** : 5 sous-Issues sous une Issue epic (US12), chacune sur sa propre branche, plutôt qu'une seule branche englobant tout le chantier. Motivation : éviter un diff unique massif touchant quasiment tous les composants, permettre de merger chaque partie stable indépendamment.
+
+```
+1. Fondations (design tokens)
+      ↓
+2. Dashboard HUD ──┬── 3. Graphique
+                    │
+4. Modales terminal (peut démarrer après 1, en parallèle de 2/3)
+      ↓
+5. Transition (nécessite 2 et 4 stables)
+```
+
+**Statut** : Epic en cours. Sous-Issues 1, 2, 3 terminées. 4 et 5 restantes.
+
+---
+
+## 25. US12.1 : design tokens
+
+**Décision (typographies)** :
+- Titres : **Orbitron** (géométrique, anguleuse, esprit HUD)
+- Texte courant : **Chakra Petch**, choisie après essai comparatif contre Inter (jugée trop ronde/neutre pour le brief) et contre Rajdhani/Space Grotesk. Retenue pour son équilibre "tranchée mais très lisible", conforme à l'exigence explicite du brief
+- Données chiffrées (poids, reps, dates) : **Share Tech Mono**, esprit terminal/console
+- Modales (réservé à la sous-Issue 4) : **VT323**, esprit CRT basse résolution
+
+**Décision (chargement des polices)** : Google Fonts via `<link rel="preconnect">` + `display=swap`, graisses limitées au strict nécessaire par police plutôt que toutes les graisses disponibles, pour limiter le poids téléchargé.
+
+**Décision (variables CSS)** : toute la palette (y compris la palette terminal, non utilisée avant la sous-Issue 4) posée dès cette étape dans `:root`, pour centraliser les couleurs à un seul endroit dès le départ plutôt que d'en ajouter éparpillées plus tard.
+
+**Statut** : ✅ Terminée.
+
+---
+
+## 26. US12.2 : dashboard HUD et bascule mobile-first
+
+**Décision (structure du style)** : classes CSS génériques réutilisables (`.panel`, `.stats-grid`, `.stat-tile`, `.series-list`) plutôt que des styles ad hoc par composant, pour garder une cohérence visuelle sans dupliquer les règles.
+
+**Incident et correction : mobile-first oublié au départ.** Le CSS a été écrit une première fois en pensant desktop (grille 2+ colonnes par défaut, marges larges, aucune taille minimale sur les boutons), alors que l'usage réel de l'appli est mobile. Repéré avant merge, corrigé par une réécriture complète en approche mobile-first : styles de base ciblant le petit écran, ajustements desktop regroupés dans un seul `@media (min-width: 640px)` plutôt que l'inverse.
+
+**Décision (accessibilité tactile)** : règle globale `button { min-height: 44px; }`, conforme à la recommandation standard de zone tactile minimale, plutôt que de fixer une taille composant par composant.
+
+**Décision (indicateur de séance)** : pastille colorée (`.session-dot`) avec animation `pulse` en CSS pur (variation d'opacité en boucle) quand une séance est active, plutôt qu'un texte clignotant. Taille ajustée de 10px à 16px après retour utilisateur (meilleure visibilité).
+
+**Statut** : ✅ Terminée.
+
+---
+
+## 27. US12.3 : style néon du graphique
+
+**Décision (limite technique recharts)** : les couleurs ne peuvent pas être passées en `var(--color-xxx)` de façon fiable aux props SVG de `recharts` (`stroke`, styles de tooltip). Constantes JS dupliquant les valeurs hexadécimales déjà définies en CSS, documenté comme duplication assumée plutôt qu'un oubli d'harmonisation.
+
+**Décision (effet de glow)** : filtre SVG natif (`feGaussianBlur` + `feMerge`) plutôt qu'un effet CSS externe, pour rester dans le système de rendu propre à `recharts`/SVG.
+
+**Correction (responsive)** : le graphique avait une largeur fixe (`width={500}`) héritée de l'implémentation initiale (US8), incompatible avec l'approche mobile-first adoptée en US12.2. Remplacé par `ResponsiveContainer`, qui mesure et s'adapte automatiquement à l'espace disponible dans le panneau parent.
+
+**Statut** : ✅ Terminée.
+
+---
+
+## 28. Idées en attente, non formalisées en code
+
+**Profil utilisateur enrichi (piste US13)** : nom d'affichage, avatar choisi parmi les personnages du backlog gamification, succès débloqués visibles. Explicitement séquencée après US12 (l'identité visuelle doit exister avant d'habiller un profil). Rejoint et enrichit l'epic Gamification déjà noté (points 15-16).
+
+**Catalogue d'exercices avec segmentation par partie du corps (haut du corps / bas du corps / full body)** : proposée en cours de session comme alternative au champ `exerciseName` en texte libre actuel. Introduit une troisième catégorie (`full_body`) non présente dans la segmentation `bodyPart` déjà envisagée pour la gamification (point 16, qui ne prévoyait que haut/bas) : à harmoniser si les deux systèmes sont conservés.
+
+Impact identifié si implémentée : nouveau modèle (`models/exercise.ts` ou équivalent), migration ou coexistence avec les données déjà saisies en texte libre, et **remplacement du champ `<input>` "Exercice"** dans les modales de saisie (actuellement en cours de stylisation en US12.4) par un composant de sélection filtrable. Ce dernier point est identifié comme le seul vrai point de friction avec le chantier visuel en cours : le champ actuel sera à retravailler une fois le catalogue en place, ce qui a été jugé acceptable plutôt que bloquant.
+
+**Décision de séquencement** : les deux idées sont explicitement mises de côté, non traitées avant la fin d'US12, pour ne pas interrompre un chantier déjà engagé.
 
 ---
 
