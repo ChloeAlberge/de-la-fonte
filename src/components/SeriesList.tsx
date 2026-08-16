@@ -13,17 +13,24 @@ export function SeriesList({ series, onSeriesChanged }: SeriesListProps) {
   );
 
   if (sortedSeries.length === 0) {
-    return <p>Aucune série enregistrée pour l'instant.</p>;
+    return (
+      <div className="panel">
+        <p>Aucune série enregistrée pour l'instant.</p>
+      </div>
+    );
   }
 
   return (
-    <ul>
-      {sortedSeries.map((entry) => (
-        <li key={entry.id}>
-          <SeriesListItem entry={entry} onChanged={onSeriesChanged} />
-        </li>
-      ))}
-    </ul>
+    <div className="panel">
+      <h2>Historique</h2>
+      <ul className="series-list">
+        {sortedSeries.map((entry) => (
+          <li key={entry.id}>
+            <SeriesListItem entry={entry} onChanged={onSeriesChanged} />
+          </li>
+        ))}
+      </ul>
+    </div>
   );
 }
 
@@ -54,25 +61,31 @@ function SeriesListItem({ entry, onChanged }: { entry: Series; onChanged: () => 
   const date = new Date(entry.performedAt).toLocaleString();
 
   return (
-    <span>
-      {entry.kind === 'strength' ? (
-        <>
-          <strong>{entry.exerciseName}</strong> ({entry.equipmentType}) —{' '}
-          {entry.weightKg !== null ? `${entry.weightKg}kg` : 'poids du corps'}
-          {entry.reps !== null && ` × ${entry.reps} reps`} × {entry.setsCount} série(s)
-        </>
-      ) : (
-        <>
-          <strong>{entry.exerciseName}</strong> (cardio) — {entry.durationMin} min
-          {entry.distanceKm !== null && `, ${entry.distanceKm}km`}
-        </>
-      )}
-      <br />
-      {date}
-      <br />
-      <button onClick={() => setIsEditing(true)}>Modifier</button>
-      <button onClick={handleDelete}>Supprimer</button>
-    </span>
+    <div>
+      <div className="series-entry-name">
+        {entry.exerciseName}
+        {entry.kind === 'strength' && ` (${entry.equipmentType})`}
+        {entry.kind === 'cardio' && ' (cardio)'}
+      </div>
+      <div className="series-entry-data">
+        {entry.kind === 'strength' ? (
+          <>
+            {entry.weightKg !== null ? `${entry.weightKg}kg` : 'poids du corps'}
+            {entry.reps !== null && ` × ${entry.reps} reps`} × {entry.setsCount} série(s)
+          </>
+        ) : (
+          <>
+            {entry.durationMin} min
+            {entry.distanceKm !== null && `, ${entry.distanceKm}km`}
+          </>
+        )}
+      </div>
+      <div className="series-entry-date">{date}</div>
+      <div className="series-actions">
+        <button onClick={() => setIsEditing(true)}>Modifier</button>
+        <button onClick={handleDelete}>Supprimer</button>
+      </div>
+    </div>
   );
 }
 
@@ -128,7 +141,7 @@ function SeriesEditForm({
   }
 
   return (
-    <span>
+    <div className="series-edit-form">
       <input value={exerciseName} onChange={(e) => setExerciseName(e.target.value)} />
 
       {entry.kind === 'strength' ? (
@@ -149,8 +162,10 @@ function SeriesEditForm({
         </>
       )}
 
-      <button onClick={handleSave}>Enregistrer</button>
-      <button onClick={onCancel}>Annuler</button>
-    </span>
+      <div className="series-actions">
+        <button onClick={handleSave}>Enregistrer</button>
+        <button onClick={onCancel}>Annuler</button>
+      </div>
+    </div>
   );
 }

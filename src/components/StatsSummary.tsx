@@ -19,29 +19,51 @@ export function StatsSummary({ series }: StatsSummaryProps) {
   const equipmentTypes: EquipmentType[] = ['machine', 'poids_libre', 'poids_du_corps'];
 
   return (
-    <div>
+    <div className="panel">
       <h2>Statistiques globales</h2>
-      <p>Volume soulevé : {globalVolume.weightedVolumeKg} kg</p>
-      <p>Répétitions au poids du corps : {globalVolume.bodyweightReps}</p>
-      <p>Exercice le plus pratiqué : {mostUsedExercise ?? 'aucun'}</p>
-      <p>Séances cette semaine : {currentWeek}</p>
-      <p>Moyenne de séances par semaine : {averageWeekly.toFixed(1)}</p>
+      <div className="stats-grid">
+        <div className="stat-tile">
+          <div className="stat-label">Volume soulevé</div>
+          <div className="stat-value">{globalVolume.weightedVolumeKg} kg</div>
+        </div>
+        <div className="stat-tile">
+          <div className="stat-label">Reps au poids du corps</div>
+          <div className="stat-value">{globalVolume.bodyweightReps}</div>
+        </div>
+        <div className="stat-tile">
+          <div className="stat-label">Exercice favori</div>
+          <div className="stat-value">{mostUsedExercise ?? 'aucun'}</div>
+        </div>
+        <div className="stat-tile">
+          <div className="stat-label">Séances cette semaine</div>
+          <div className="stat-value">{currentWeek}</div>
+        </div>
+        <div className="stat-tile">
+          <div className="stat-label">Moyenne séances/semaine</div>
+          <div className="stat-value">{averageWeekly.toFixed(1)}</div>
+        </div>
+      </div>
 
       <h3>Par type d'équipement</h3>
-      {equipmentTypes.map((type) => {
-        const filtered = series.filter(
-          (s): s is Extract<Series, { kind: 'strength' }> =>
-            s.kind === 'strength' && s.equipmentType === type
-        );
-        const volume = computeTotalVolume(filtered);
+      <div className="stats-grid">
+        {equipmentTypes.map((type) => {
+          const filtered = series.filter(
+            (s): s is Extract<Series, { kind: 'strength' }> =>
+              s.kind === 'strength' && s.equipmentType === type
+          );
+          const volume = computeTotalVolume(filtered);
 
-        return (
-          <p key={type}>
-            {type} — {volume.weightedVolumeKg} kg
-            {volume.bodyweightReps > 0 && `, ${volume.bodyweightReps} reps (poids du corps)`}
-          </p>
-        );
-      })}
+          return (
+            <div className="stat-tile" key={type}>
+              <div className="stat-label">{type}</div>
+              <div className="stat-value">
+                {volume.weightedVolumeKg} kg
+                {volume.bodyweightReps > 0 && `, ${volume.bodyweightReps} reps`}
+              </div>
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
 }
