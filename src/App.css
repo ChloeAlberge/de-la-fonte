@@ -1,5 +1,23 @@
+/* ==========================================================================
+   1. FONDATIONS — variables, reset, typo de base (US12.1)
+   ========================================================================== */
+
 :root {
-  /* (inchangé, palette + typo déjà posées en US12.1) */
+  --color-void: #020309;
+  --color-deep: #0b1026;
+  --color-neon-cyan: #27b0ff;
+  --color-neon-violet: #6e00ff;
+  --color-chrome: #9aa5b8;
+  --color-text: #eef2fb;
+
+  --color-terminal-bg: #0a0a0a;
+  --color-terminal-green: #33ff66;
+  --color-terminal-green-dim: #1a8033;
+
+  --font-display: 'Orbitron', sans-serif;
+  --font-body: 'Chakra Petch', sans-serif;
+  --font-data: 'Share Tech Mono', monospace;
+  --font-terminal: 'VT323', monospace;
 }
 
 * {
@@ -23,7 +41,6 @@ a {
   color: var(--color-neon-cyan);
 }
 
-/* Boutons : taille minimale tactile (44px), partout dans l'appli */
 button {
   min-height: 44px;
   padding: 0.5rem 1rem;
@@ -31,7 +48,10 @@ button {
   font-size: 0.95rem;
 }
 
-/* Header : empilé verticalement sur mobile */
+/* ==========================================================================
+   2. DASHBOARD HUD — header, séance, panels, stats, historique (US12.2)
+   ========================================================================== */
+
 .app-header {
   display: flex;
   flex-direction: column;
@@ -48,7 +68,6 @@ button {
   margin: 0;
 }
 
-/* Indicateur de séance : passe à la ligne proprement si ça manque de place */
 .session-indicator {
   display: flex;
   flex-wrap: wrap;
@@ -73,12 +92,6 @@ button {
   animation: pulse 1.6s ease-in-out infinite;
 }
 
-@keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.4; }
-}
-
-/* Panneaux : marges réduites sur mobile, pour ne pas manger l'espace disponible */
 .panel {
   background: var(--color-deep);
   border: 1px solid var(--color-chrome);
@@ -95,7 +108,6 @@ button {
   margin-top: 0;
 }
 
-/* Une seule colonne par défaut : plus lisible sur petit écran */
 .stats-grid {
   display: grid;
   grid-template-columns: 1fr;
@@ -155,33 +167,6 @@ button {
   font-size: 0.8rem;
 }
 
-/* Écrans plus larges (tablette/desktop) : on retrouve un peu plus de confort */
-@media (min-width: 640px) {
-  .app-header {
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
-    padding: 1.5rem 2rem;
-  }
-
-  .app-header h1 {
-    font-size: 1.75rem;
-  }
-
-  .session-indicator {
-    width: auto;
-  }
-
-  .panel {
-    margin: 1rem 2rem;
-    padding: 1.25rem;
-  }
-
-  .stats-grid {
-    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-  }
-}
-
 .series-actions {
   display: flex;
   gap: 0.5rem;
@@ -199,6 +184,10 @@ button {
   min-height: 44px;
   padding: 0.4rem 0.6rem;
 }
+
+/* ==========================================================================
+   3. MODALES TERMINAL — overlay, formulaires phosphore vert (US12.4)
+   ========================================================================== */
 
 .modal-overlay {
   position: fixed;
@@ -258,7 +247,7 @@ button {
   content: '> ';
 }
 
-.terminal-modal input,
+.terminal-modal input:not([type="radio"]),
 .terminal-modal select {
   width: 100%;
   background: transparent;
@@ -278,6 +267,12 @@ button {
   box-shadow: 0 0 6px rgba(51, 255, 102, 0.5);
 }
 
+.terminal-modal input[type="radio"] {
+  width: 20px;
+  height: 20px;
+  accent-color: var(--color-terminal-green);
+}
+
 .terminal-modal button {
   background: transparent;
   border: 1px solid var(--color-terminal-green);
@@ -292,17 +287,10 @@ button {
   background: rgba(51, 255, 102, 0.15);
 }
 
-.modal-type-toggle {
-  display: flex;
-  gap: 0.5rem;
-  margin-bottom: 1rem;
-}
-
-.terminal-modal input[type="radio"] {
-  width: 20px;
-  height: 20px;
-  min-height: unset;
-  accent-color: var(--color-terminal-green);
+.terminal-modal fieldset {
+  border: 1px solid var(--color-terminal-green-dim);
+  margin: 0.75rem 0;
+  padding: 0.75rem;
 }
 
 .terminal-modal fieldset label {
@@ -317,13 +305,121 @@ button {
   content: '';
 }
 
-.terminal-modal fieldset {
-  border: 1px solid var(--color-terminal-green-dim);
-  margin: 0.75rem 0;
-  padding: 0.75rem;
-}
-
 .terminal-modal legend {
   text-transform: uppercase;
   padding: 0 0.5rem;
+}
+
+.modal-type-toggle {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.modal-close {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  width: 36px;
+  height: 36px;
+  min-height: 36px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  line-height: 1;
+  border-radius: 2px;
+}
+
+/* ==========================================================================
+   4. ANIMATIONS — pulsation séance, transition d'écran modale (US12.2, US12.5)
+   ========================================================================== */
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+@keyframes screen-on {
+  0% {
+    opacity: 0;
+    transform: scaleY(0.02);
+    filter: brightness(3);
+  }
+  60% {
+    opacity: 1;
+    transform: scaleY(1.02);
+    filter: brightness(1.5);
+  }
+  100% {
+    opacity: 1;
+    transform: scaleY(1);
+    filter: brightness(1);
+  }
+}
+
+@keyframes screen-off {
+  0% {
+    opacity: 1;
+    transform: scaleY(1);
+    filter: brightness(1);
+  }
+  40% {
+    filter: brightness(2.5);
+  }
+  100% {
+    opacity: 0;
+    transform: scaleY(0.02);
+    filter: brightness(3);
+  }
+}
+
+@keyframes overlay-fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.modal-opening {
+  animation: screen-on 800ms ease-out;
+  transform-origin: center;
+}
+
+.modal-closing {
+  animation: screen-off 800ms ease-in;
+  transform-origin: center;
+}
+
+.modal-overlay {
+  animation: overlay-fade 800ms ease-out;
+}
+
+/* ==========================================================================
+   5. RESPONSIVE — ajustements écrans larges (tablette/desktop)
+   ========================================================================== */
+
+@media (min-width: 640px) {
+  .app-header {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.5rem 2rem;
+  }
+
+  .app-header h1 {
+    font-size: 1.75rem;
+  }
+
+  .session-indicator {
+    width: auto;
+  }
+
+  .panel {
+    margin: 1rem 2rem;
+    padding: 1.25rem;
+  }
+
+  .stats-grid {
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  }
 }

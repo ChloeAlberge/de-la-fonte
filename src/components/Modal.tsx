@@ -1,4 +1,4 @@
-import { useEffect, type ReactNode } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 
 interface ModalProps {
   onClose: () => void;
@@ -6,17 +6,30 @@ interface ModalProps {
 }
 
 export function Modal({ onClose, children }: ModalProps) {
+  const [isClosing, setIsClosing] = useState(false);
+
   useEffect(() => {
     function handleKeyDown(event: KeyboardEvent) {
-      if (event.key === 'Escape') onClose();
+      if (event.key === 'Escape') requestClose();
     }
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [onClose]);
+  }, []);
+
+  function requestClose() {
+    setIsClosing(true);
+    setTimeout(onClose, 800);
+  }
 
   return (
-    <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-content terminal-modal" onClick={(e) => e.stopPropagation()}>
+    <div className="modal-overlay" onClick={requestClose}>
+      <div
+        className={`modal-content terminal-modal ${isClosing ? 'modal-closing' : 'modal-opening'}`}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <button className="modal-close" onClick={requestClose} aria-label="Fermer">
+          ✕
+        </button>
         {children}
       </div>
     </div>
