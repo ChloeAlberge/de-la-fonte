@@ -4,6 +4,7 @@ import { CardioForm } from "./components/CardioForm";
 import { ActiveSessionBar } from "./components/ActiveSessionBar";
 import { SeriesList } from "./components/SeriesList";
 import { ExerciseFilter } from "./components/ExerciseFilter";
+import { Modal } from "./components/Modal";
 import { getAllSeries } from "./storage/seriesStorage";
 import { getUniqueExerciseNames, filterByExercise } from "./stats/seriesStats";
 import { FrequencyView } from "./components/FrequencyView";
@@ -15,9 +16,15 @@ function App() {
   const [allSeries, setAllSeries] = useState(() => getAllSeries());
   const [entryType, setEntryType] = useState<"strength" | "cardio">("strength");
   const [selectedExercise, setSelectedExercise] = useState<string | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   function refreshSeries() {
     setAllSeries(getAllSeries());
+  }
+
+  function handleSeriesAdded() {
+    refreshSeries();
+    setIsModalOpen(false);
   }
 
   const exerciseNames = getUniqueExerciseNames(allSeries);
@@ -32,15 +39,24 @@ function App() {
       </header>
       <ActiveSessionBar onSessionChange={refreshSeries} />
 
-      <div>
-        <button onClick={() => setEntryType("strength")}>Musculation</button>
-        <button onClick={() => setEntryType("cardio")}>Cardio</button>
+      <div className="panel">
+        <button onClick={() => setIsModalOpen(true)}>+ Ajouter</button>
       </div>
 
-      {entryType === "strength" ? (
-        <SeriesForm onSeriesAdded={refreshSeries} />
-      ) : (
-        <CardioForm onSeriesAdded={refreshSeries} />
+      {isModalOpen && (
+        <Modal onClose={() => setIsModalOpen(false)}>
+          <h2>Nouvelle entrée</h2>
+          <div className="modal-type-toggle">
+            <button onClick={() => setEntryType("strength")}>Musculation</button>
+            <button onClick={() => setEntryType("cardio")}>Cardio</button>
+          </div>
+
+          {entryType === "strength" ? (
+            <SeriesForm onSeriesAdded={handleSeriesAdded} />
+          ) : (
+            <CardioForm onSeriesAdded={handleSeriesAdded} />
+          )}
+        </Modal>
       )}
 
       <ExerciseFilter

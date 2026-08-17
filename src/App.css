@@ -199,3 +199,131 @@ button {
   min-height: 44px;
   padding: 0.4rem 0.6rem;
 }
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(2, 3, 9, 0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  padding: 1rem;
+}
+
+.terminal-modal {
+  background: var(--color-terminal-bg);
+  border: 2px solid var(--color-terminal-green);
+  box-shadow: 0 0 20px rgba(51, 255, 102, 0.4);
+  padding: 1.25rem;
+  width: 100%;
+  max-width: 420px;
+  max-height: 90vh;
+  overflow-y: auto;
+  font-family: var(--font-terminal);
+  color: var(--color-terminal-green);
+  position: relative;
+}
+
+.terminal-modal::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(51, 255, 102, 0.04) 0px,
+    rgba(51, 255, 102, 0.04) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+}
+
+.terminal-modal h2 {
+  font-family: var(--font-terminal);
+  font-size: 1.5rem;
+  color: var(--color-terminal-green);
+  text-transform: uppercase;
+  margin-top: 0;
+}
+
+.terminal-modal label {
+  display: block;
+  text-transform: uppercase;
+  font-size: 1.1rem;
+  margin: 0.75rem 0 0.25rem;
+}
+
+.terminal-modal label::before {
+  content: '> ';
+}
+
+.terminal-modal input,
+.terminal-modal select {
+  width: 100%;
+  background: transparent;
+  border: 1px solid var(--color-terminal-green-dim);
+  color: var(--color-terminal-green);
+  font-family: var(--font-terminal);
+  font-size: 1.15rem;
+  padding: 0.4rem 0.6rem;
+  min-height: 44px;
+  caret-color: var(--color-terminal-green);
+}
+
+.terminal-modal input:focus,
+.terminal-modal select:focus {
+  outline: none;
+  border-color: var(--color-terminal-green);
+  box-shadow: 0 0 6px rgba(51, 255, 102, 0.5);
+}
+
+.terminal-modal button {
+  background: transparent;
+  border: 1px solid var(--color-terminal-green);
+  color: var(--color-terminal-green);
+  font-family: var(--font-terminal);
+  text-transform: uppercase;
+  margin-top: 1rem;
+  margin-right: 0.5rem;
+}
+
+.terminal-modal button:hover {
+  background: rgba(51, 255, 102, 0.15);
+}
+
+.modal-type-toggle {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.terminal-modal input[type="radio"] {
+  width: 20px;
+  height: 20px;
+  min-height: unset;
+  accent-color: var(--color-terminal-green);
+}
+
+.terminal-modal fieldset label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  text-transform: none;
+  font-size: 1rem;
+}
+
+.terminal-modal fieldset label::before {
+  content: '';
+}
+
+.terminal-modal fieldset {
+  border: 1px solid var(--color-terminal-green-dim);
+  margin: 0.75rem 0;
+  padding: 0.75rem;
+}
+
+.terminal-modal legend {
+  text-transform: uppercase;
+  padding: 0 0.5rem;
+}
