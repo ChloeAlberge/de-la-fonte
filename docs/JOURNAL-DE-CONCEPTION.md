@@ -234,6 +234,9 @@ function startSession(): Session {
 | US7 | Fonctionnement hors ligne | ⏳ |
 | US8 | Graphique de progression | ✅ |
 | US12 | Identité visuelle (epic, 5 sous-Issues) | ✅ |
+| US6/US7 | PWA installable et hors ligne | ✅ |
+
+**MVP complet.** Toutes les User Stories planifiées sont terminées.
 | US9 | Statistiques globales | ✅ |
 
 ---
@@ -441,6 +444,29 @@ Impact identifié si implémentée : nouveau modèle (`models/exercise.ts` ou é
 **Correction** : Issue fermée manuellement avec un commentaire explicite documentant l'écart, branche fantôme supprimée (locale et distante).
 
 **Leçon retenue, appliquée dès la sous-Issue suivante** : après tout `git checkout -b`, vérifier immédiatement `git branch` pour confirmer qu'on est bien sur la nouvelle branche avant d'enchaîner d'autres commandes, plutôt que de supposer que l'enchaînement a fonctionné.
+
+---
+
+## 32. US6/US7 : installation PWA et fonctionnement hors ligne
+
+**Décision (outillage)** : `vite-plugin-pwa` plutôt qu'un manifest et un Service Worker écrits à la main (approche envisagée tout au début du projet). Génère automatiquement les deux à partir d'une configuration déclarative dans `vite.config.ts`, s'appuie sur Workbox en interne pour la stratégie de cache.
+
+**Décision (mise à jour)** : `registerType: 'autoUpdate'`, le Service Worker se met à jour et recharge automatiquement en arrière-plan lors d'un nouveau déploiement, sans notification bloquante à gérer. Suffisant pour un usage solo, pas besoin de l'alternative `'prompt'`.
+
+**Icônes** : conçues dans l'identité visuelle posée en US12 (texte "DE LA FONTE" en néon cyan/violet sur fond sombre). Première tentative en pictogramme façon silhouette (haltérophile) écartée au profit d'un logo texte, jugé plus lisible et plus cohérent avec l'esthétique déjà construite. Génération finale via un outil externe de génération d'image à partir d'un brief détaillé (palette, typographie, contraintes de lisibilité à petite taille), plutôt qu'un rendu entièrement construit par assemblage de formes.
+
+**Point technique découvert en testant : le Service Worker n'est actif qu'en build de production.** `npm run dev` ne génère ni manifest ni Service Worker (sauf activation explicite d'une option de développement, non utilisée ici). La vérification réelle nécessite `npm run build` puis `npm run preview`.
+
+**Point technique découvert en testant : Firefox desktop ne supporte pas l'installation de PWA nativement**, contrairement à Chrome/Edge. Bascule sur Chrome pour la vérification. Sur Android en revanche, Firefox supporte l'installation comme les autres navigateurs — non bloquant pour l'usage réel visé (téléphone).
+
+**Vérification concrète effectuée** (pas seulement théorique) :
+- Build de production réussi, manifest et Service Worker confirmés actifs dans les DevTools Chrome (`#N activated and is running`)
+- Prompt d'installation natif Chrome déclenché et accepté, appli confirmée dans le menu Démarrer Windows comme application autonome
+- Mode hors ligne testé via DevTools (`Network → Offline`) : données, historique et statistiques restent accessibles, cohérent avec `localStorage` (jamais dépendant du réseau) combiné au cache du Service Worker pour les fichiers de l'appli elle-même
+
+**Point noté, non traité** : le build de production signale un chunk JS de 557 Ko après minification (probablement `recharts`), au-delà du seuil d'avertissement de Vite. Non bloquant, identifié comme amélioration future (code-splitting) plutôt que traité immédiatement.
+
+**Statut** : ✅ Terminée. **Le MVP complet (US1-US5, US8-US12) est achevé.**
 
 ---
 
