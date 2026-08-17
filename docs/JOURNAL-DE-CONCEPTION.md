@@ -219,7 +219,7 @@ function startSession(): Session {
 
 ---
 
-## État d'avancement (au 12 août 2026)
+## État d'avancement (au 16 août 2026)
 
 | US | Sujet | Statut |
 |---|---|---|
@@ -233,6 +233,7 @@ function startSession(): Session {
 | US6 | Installer l'appli (PWA) | ⏳ |
 | US7 | Fonctionnement hors ligne | ⏳ |
 | US8 | Graphique de progression | ✅ |
+| US12 | Identité visuelle (epic, 5 sous-Issues) | ✅ |
 | US9 | Statistiques globales | ✅ |
 
 ---
@@ -402,6 +403,44 @@ function startSession(): Session {
 Impact identifié si implémentée : nouveau modèle (`models/exercise.ts` ou équivalent), migration ou coexistence avec les données déjà saisies en texte libre, et **remplacement du champ `<input>` "Exercice"** dans les modales de saisie (actuellement en cours de stylisation en US12.4) par un composant de sélection filtrable. Ce dernier point est identifié comme le seul vrai point de friction avec le chantier visuel en cours : le champ actuel sera à retravailler une fois le catalogue en place, ce qui a été jugé acceptable plutôt que bloquant.
 
 **Décision de séquencement** : les deux idées sont explicitement mises de côté, non traitées avant la fin d'US12, pour ne pas interrompre un chantier déjà engagé.
+
+---
+
+## 29. US12.4 : modales terminal
+
+**Décision (architecture)** : composant `Modal` générique et réutilisable (accepte `children`), plutôt qu'une modale dédiée par formulaire. `SeriesForm` et `CardioForm` passent d'un affichage en flux direct dans la page à un contenu injecté dans cette modale commune, déclenchée par un bouton "+ Ajouter" sur le dashboard.
+
+**Décision (fermeture)** : trois déclencheurs équivalents, clic sur l'overlay, touche Échap, croix explicite ajoutée après retour sur l'usage mobile (cliquer en dehors n'étant pas un geste naturel au toucher). Les trois passent par la même fonction pour garantir un comportement (et une animation) identique quel que soit le déclencheur.
+
+**Décision (esthétique)** : rupture stylistique volontaire déjà actée au point 24, réalisée via scanlines en CSS pur (`repeating-linear-gradient`), préfixe `> ` généré automatiquement sur les labels (`::before`), et `caret-color` pour teinter le curseur de texte natif du navigateur plutôt que de recréer un clignotement en JS.
+
+**Correction en cours de route** : les boutons radio (type d'équipement) héritaient par défaut du style des champs texte, taille disproportionnée et alignement vertical cassé. Corrigé par une règle ciblée (exclusion des radios de la règle générale sur les `input`), `accent-color` pour teinter les radios nativement, et `display: flex` sur leurs labels.
+
+**Statut** : ✅ Terminée. Notable : mergée directement sur `main` sans passer par une Pull Request (voir point 31, incident de méthode).
+
+---
+
+## 30. US12.5 : transition d'écran et refacto CSS
+
+**Décision (effet visuel)** : animation CSS pure (`@keyframes`, `scaleY` et `filter: brightness`) simulant un allumage/extinction d'écran CRT, plutôt qu'un simple fade. Durée ajustée de 180ms à 800ms après retour utilisateur (effet initial jugé trop rapide).
+
+**Point technique : synchronisation animation CSS et démontage JS.** La fermeture ne peut pas démonter immédiatement le composant `Modal` (`onClose`), sinon l'animation de fermeture n'aurait pas le temps de se jouer visuellement. Un état local `isClosing` change la classe CSS appliquée, et un `setTimeout` de même durée que l'animation retarde l'appel réel à `onClose`. Les deux valeurs (durée CSS et délai JS) doivent rester strictement identiques, sous peine de coupure brutale (délai trop court) ou de temps mort visible (délai trop long).
+
+**Décision (refactoring CSS)** : à la demande explicite, `App.css` (atteignant ~400 lignes après 4 sous-Issues) réorganisé en 5 sections commentées (fondations, dashboard, terminal, animations, responsive) au sein d'un seul fichier, plutôt qu'un découpage en plusieurs fichiers CSS envisagé puis écarté par préférence. Corrige au passage un contre-ordre CSS existant (règle radio annulée juste après avoir été posée) par une exclusion ciblée (`:not([type="radio"])`) plutôt que deux règles contradictoires.
+
+**Statut** : ✅ Terminée.
+
+---
+
+## 31. Incident de méthode : commit direct sur `main` (US12.4)
+
+**Contexte** : lors de l'ouverture de la branche `feature/us12-terminal-modals`, la commande `git checkout -b` a échoué silencieusement dans l'enchaînement de commandes (la branche existait déjà depuis l'ouverture initiale de l'Issue). Le travail de la sous-Issue 4 a été commité et poussé directement sur `main`, sans Pull Request.
+
+**Conséquence** : aucun impact fonctionnel (le code est correct et sur `main`), mais rupture de traçabilité, l'Issue `#27` ne s'est pas fermée automatiquement faute de PR mergée.
+
+**Correction** : Issue fermée manuellement avec un commentaire explicite documentant l'écart, branche fantôme supprimée (locale et distante).
+
+**Leçon retenue, appliquée dès la sous-Issue suivante** : après tout `git checkout -b`, vérifier immédiatement `git branch` pour confirmer qu'on est bien sur la nouvelle branche avant d'enchaîner d'autres commandes, plutôt que de supposer que l'enchaînement a fonctionné.
 
 ---
 
