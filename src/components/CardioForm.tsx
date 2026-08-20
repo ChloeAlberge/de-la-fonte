@@ -2,6 +2,7 @@ import { useState, type FormEvent } from 'react';
 import type { NewSeries } from '../models/series';
 import { addSeries } from '../storage/seriesStorage';
 import { getActiveSession } from '../storage/sessionStorage';
+import { CardioExerciseSelect } from './CardioExerciseSelect';
 
 interface CardioFormProps {
   onSeriesAdded: () => void;
@@ -18,6 +19,7 @@ export function CardioForm({ onSeriesAdded }: CardioFormProps) {
     const newSeries: NewSeries = {
       kind: 'cardio',
       exerciseName,
+      bodyPart: 'full_body',
       distanceKm: distanceKm === '' ? null : Number(distanceKm),
       durationMin: Number(durationMin),
       performedAt: new Date().toISOString(),
@@ -35,16 +37,10 @@ export function CardioForm({ onSeriesAdded }: CardioFormProps) {
 
   return (
     <form onSubmit={handleSubmit}>
-      <label>
-        Exercice
-        <input
-          type="text"
-          value={exerciseName}
-          onChange={(e) => setExerciseName(e.target.value)}
-          required
-          placeholder="ex: Course à pied, Vélo..."
-        />
-      </label>
+      <CardioExerciseSelect
+        exerciseName={exerciseName}
+        onExerciseNameChange={setExerciseName}
+      />
 
       <label>
         Distance (km) — optionnel

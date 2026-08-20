@@ -1,7 +1,9 @@
 import { useState, type FormEvent } from "react";
 import { getActiveSession } from '../storage/sessionStorage';
 import type { EquipmentType, NewSeries } from "../models/series";
+import type { BodyPart } from "../models/exercise";
 import { addSeries } from "../storage/seriesStorage";
+import { ExerciseSelect } from "./ExerciseSelect";
 
 interface SeriesFormProps {
   onSeriesAdded: () => void;
@@ -15,6 +17,7 @@ const EQUIPMENT_TYPES: EquipmentType[] = [
 
 export function SeriesForm({ onSeriesAdded }: SeriesFormProps) {
   const [exerciseName, setExerciseName] = useState("");
+  const [bodyPart, setBodyPart] = useState<BodyPart | "">("");
   const [equipmentType, setEquipmentType] = useState<EquipmentType>("machine");
   const [weightKg, setWeightKg] = useState("");
   const [reps, setReps] = useState("");
@@ -25,9 +28,14 @@ export function SeriesForm({ onSeriesAdded }: SeriesFormProps) {
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
+    if (bodyPart === "") {
+      return;
+    }
+
     const newSeries: NewSeries = {
       kind: "strength",
       exerciseName,
+      bodyPart,
       equipmentType,
       weightKg: weightKg === "" ? null : Number(weightKg),
       reps: reps === "" ? null : Number(reps),
@@ -39,6 +47,7 @@ export function SeriesForm({ onSeriesAdded }: SeriesFormProps) {
     addSeries(newSeries);
 
     setExerciseName("");
+    setBodyPart("");
     setEquipmentType("machine");
     setWeightKg("");
     setReps("");
@@ -49,15 +58,12 @@ export function SeriesForm({ onSeriesAdded }: SeriesFormProps) {
 
   return (
     <form onSubmit={handleSubmit}>
-      <label>
-        Exercice
-        <input
-          type="text"
-          value={exerciseName}
-          onChange={(e) => setExerciseName(e.target.value)}
-          required
-        />
-      </label>
+      <ExerciseSelect
+        exerciseName={exerciseName}
+        onExerciseNameChange={setExerciseName}
+        bodyPart={bodyPart}
+        onBodyPartChange={setBodyPart}
+      />
 
       <fieldset>
         <legend>Type d'équipement</legend>

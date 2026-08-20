@@ -14,6 +14,7 @@ const legPress: Series = {
   setsCount: 3,
   performedAt: '2026-08-12T10:36:38.000Z',
   sessionId: null,
+  bodyPart: 'bas_du_corps',
 };
 
 describe('SeriesList', () => {
