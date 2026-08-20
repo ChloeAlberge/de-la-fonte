@@ -22,6 +22,7 @@ const legPress: Series = {
   setsCount: 3,
   performedAt: "2026-08-12T10:36:38.000Z",
   sessionId: null,
+  bodyPart: "bas_du_corps",
 };
 
 const legPressAgain: Series = {
@@ -38,6 +39,7 @@ const running: Series = {
   durationMin: 60,
   performedAt: "2026-08-12T13:52:51.000Z",
   sessionId: null,
+  bodyPart: "full_body",
 };
 
 const squat: Series = {
@@ -50,6 +52,7 @@ const squat: Series = {
   setsCount: 4,
   performedAt: "2026-08-12T09:00:00.000Z",
   sessionId: null,
+  bodyPart: "bas_du_corps",
 };
 
 describe("getUniqueExerciseNames", () => {
@@ -190,6 +193,7 @@ describe('computeTotalVolume', () => {
       setsCount: 3,
       performedAt: '2026-08-12T09:00:00.000Z',
       sessionId: null,
+      bodyPart: 'bas_du_corps',
     };
 
     const result = computeTotalVolume([bodyweightSquat]);
@@ -252,6 +256,7 @@ describe('computeProgressionForExercise', () => {
       setsCount: 3,
       performedAt: '2026-08-12T09:00:00.000Z',
       sessionId: null,
+      bodyPart: 'bas_du_corps',
     };
 
     expect(computeProgressionForExercise([bodyweight], 'Squat')).toEqual([]);

@@ -1,10 +1,13 @@
 export type EquipmentType = 'machine' | 'poids_libre' | 'poids_du_corps';
 
+import type { BodyPart } from './exercise';
+
 interface BaseSeries {
   id: string;
   exerciseName: string;
   performedAt: string;
   sessionId: string | null;
+  bodyPart: BodyPart;
 }
 
 export interface StrengthSeries extends BaseSeries {

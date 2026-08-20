@@ -16,6 +16,7 @@ const sampleSeries: NewSeries = {
   setsCount: 3,
   performedAt: "2026-08-11T10:00:00.000Z",
   sessionId: null,
+  bodyPart: 'haut_du_corps',
 };
 
 describe("seriesStorage", () => {
