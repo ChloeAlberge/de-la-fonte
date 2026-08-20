@@ -50,12 +50,10 @@
   - Rejoint le roster de personnages et le système de succès ci-dessus
   - Conception : journal, point 28
 
-### Catalogue d'exercices
+### Epic : Catalogue d'exercices
 
-- Remplacement (ou complément) du champ `exerciseName` en texte libre par un catalogue prédéfini, filtrable par segmentation corporelle : `haut_du_corps` / `bas_du_corps` / `full_body`
-- Note : introduit une 3e catégorie (`full_body`) par rapport à la segmentation `bodyPart` déjà envisagée pour la gamification (haut/bas uniquement) : à harmoniser
-- Impact identifié : nouveau modèle, migration/coexistence avec les données existantes, remplacement du champ de saisie texte par un composant de sélection filtrable dans les modales
-- Conception : journal, point 28
+- **US14** ✅ : En tant qu'utilisatrice, je veux choisir mon exercice dans un catalogue filtrable par partie du corps (avec une option "Autre" personnalisée) afin d'enrichir mes statistiques sans perdre la liberté de saisie.
+  - Conception détaillée : journal, point 33
 
 ## Backlog V2 (hors périmètre proche)
 

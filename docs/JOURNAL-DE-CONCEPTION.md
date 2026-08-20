@@ -235,6 +235,7 @@ function startSession(): Session {
 | US8 | Graphique de progression | ✅ |
 | US12 | Identité visuelle (epic, 5 sous-Issues) | ✅ |
 | US6/US7 | PWA installable et hors ligne | ✅ |
+| US14 | Catalogue d'exercices et bodyPart | ✅ |
 
 **MVP complet.** Toutes les User Stories planifiées sont terminées.
 | US9 | Statistiques globales | ✅ |
@@ -467,6 +468,26 @@ Impact identifié si implémentée : nouveau modèle (`models/exercise.ts` ou é
 **Point noté, non traité** : le build de production signale un chunk JS de 557 Ko après minification (probablement `recharts`), au-delà du seuil d'avertissement de Vite. Non bloquant, identifié comme amélioration future (code-splitting) plutôt que traité immédiatement.
 
 **Statut** : ✅ Terminée. **Le MVP complet (US1-US5, US8-US12) est achevé.**
+
+---
+
+## 33. US14 : catalogue d'exercices et segmentation par partie du corps
+
+**Décision (modélisation)** : catalogue statique et suggestif plutôt qu'une entité stricte référencée. `bodyPart` fixé directement sur chaque série au moment de la saisie (via `EXERCISE_CATALOG` pour les exercices connus, ou choisi manuellement en mode "Autre (personnalisé)"), plutôt qu'un `exerciseId` référençant le catalogue.
+
+**Justification** : un `exerciseId` créerait un risque de séries orphelines si le catalogue est modifié après coup (renommage, suppression). Stocker `bodyPart` directement sur chaque série la rend autonome, indépendante de toute évolution future du catalogue.
+
+**Décision (compromis rigueur/souplesse)** : catalogue large (~130 exercices, anglicismes usuels en salle : LegPress, Leg Curl, etc., harmonisés après une première version incohérente) avec entrée systématique "Autre (personnalisé)" comme filet de sécurité, plutôt qu'un choix binaire strict/libre.
+
+**Décision (données existantes)** : aucune migration. Les séries enregistrées avant cette US n'ont pas de `bodyPart`, elles restent affichables mais sont exclues des futures statistiques par partie du corps. Choix assumé après avoir établi que les données de test accumulées en session n'avaient aucune valeur à préserver.
+
+**Décision (cardio)** : `bodyPart` fixé silencieusement à `'full_body'`, sans demander de choix à l'utilisateur (les mouvements cardio ne se prêtent pas à une segmentation haut/bas). Liste d'autocomplétion dédiée et plus courte (`CARDIO_EXERCISES`), sans filtre par partie du corps (superflu, valeur toujours identique).
+
+**Composants créés** : `ExerciseSelect` (muscu, catalogue filtrable par partie du corps + mode personnalisé) et `CardioExerciseSelect` (cardio, liste simple + mode personnalisé), volontairement séparés plutôt qu'un composant unique avec des branches conditionnelles.
+
+**Point de méthode, plusieurs incidents de copier-coller en cours de session** : le tableau `EXERCISE_CATALOG` est resté vide (commentaire placeholder jamais remplacé) pendant plusieurs échanges avant d'être repéré via le comportement observé dans le navigateur (menu déroulant vide) plutôt que via une erreur de compilation. Un fichier de test (`SeriesList.test.tsx`) a également écrasé le contenu d'un autre (`seriesStats.test.ts`) par erreur de copier-coller, provoquant une cascade d'erreurs de syntaxe JSX dans un fichier `.ts`. Les deux corrigés en comparant le contenu réel des fichiers plutôt qu'en supposant leur état.
+
+**Statut** : ✅ Terminée.
 
 ---
 
