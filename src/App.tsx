@@ -10,6 +10,7 @@ import { getUniqueExerciseNames, filterByExercise } from "./stats/seriesStats";
 import { FrequencyView } from "./components/FrequencyView";
 import { StatsSummary } from "./components/StatsSummary";
 import { ProgressChart } from "./components/ProgressChart";
+import { ProfileSection } from "./components/ProfileSection";
 import "./App.css";
 
 function App() {
@@ -58,6 +59,8 @@ function App() {
           )}
         </Modal>
       )}
+
+      <ProfileSection series={allSeries} />
 
       <ExerciseFilter
         exerciseNames={exerciseNames}
