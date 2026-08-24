@@ -6,8 +6,8 @@ interface ExerciseFilterProps {
 
 export function ExerciseFilter({ exerciseNames, selected, onChange }: ExerciseFilterProps) {
   return (
-    <label>
-      Filtrer par exercice
+    <>
+      <h2>Filtrer par exercice</h2>
       <select
         value={selected ?? ''}
         onChange={(e) => onChange(e.target.value === '' ? null : e.target.value)}
@@ -19,6 +19,6 @@ export function ExerciseFilter({ exerciseNames, selected, onChange }: ExerciseFi
           </option>
         ))}
       </select>
-    </label>
+    </>
   );
 }

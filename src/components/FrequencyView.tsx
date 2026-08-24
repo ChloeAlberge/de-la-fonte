@@ -10,9 +10,9 @@ export function FrequencyView({ series }: FrequencyViewProps) {
   const byEquipmentType = computeFrequencyByEquipmentType(series);
 
   return (
-    <div>
+    <div className="panel">
       <h2>Fréquence par exercice</h2>
-      <ul>
+      <ul className="series-list">
         {Object.entries(byExercise).map(([exerciseName, freq]) => (
           <li key={exerciseName}>
             {exerciseName} — {freq.seriesCount} série(s) sur {freq.distinctDaysCount} jour(s)
@@ -20,8 +20,8 @@ export function FrequencyView({ series }: FrequencyViewProps) {
         ))}
       </ul>
 
-      <h2>Fréquence par type d'équipement</h2>
-      <ul>
+      <h3>Par type d'équipement</h3>
+      <ul className="series-list">
         {Object.entries(byEquipmentType).map(([equipmentType, freq]) => (
           <li key={equipmentType}>
             {equipmentType} — {freq.seriesCount} série(s) sur {freq.distinctDaysCount} jour(s)
