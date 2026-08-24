@@ -201,7 +201,7 @@ input:focus {
 }
 
 .session-status-text {
-  font-size: 1.3rem;
+  font-size: 1.1rem;
   color: var(--color-text);
   text-shadow: 0 0 6px rgba(238, 242, 251, 0.4);
 }
