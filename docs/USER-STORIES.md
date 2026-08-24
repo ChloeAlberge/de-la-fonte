@@ -31,8 +31,10 @@
 
 ### Epic : Expérience mobile
 
-- **US6** ✅ : En tant qu'utilisateur, je veux installer l'appli sur mon écran d'accueil afin d'y accéder comme une vraie appli.
-- **US7** ✅ : En tant qu'utilisateur, je veux pouvoir enregistrer une série sans connexion réseau afin de l'utiliser à la salle où le signal est mauvais.
+- **US6** ⚠️ : En tant qu'utilisateur, je veux installer l'appli sur mon écran d'accueil afin d'y accéder comme une vraie appli.
+  - Vérifié sur desktop (Windows/Chrome). **Non encore testé sur téléphone réel** — à faire (réseau local ou déploiement GitHub Pages).
+- **US7** ⚠️ : En tant qu'utilisateur, je veux pouvoir enregistrer une série sans connexion réseau afin de l'utiliser à la salle où le signal est mauvais.
+  - Mode hors ligne vérifié sur desktop (DevTools Offline). **Non encore testé sur téléphone réel.**
 
 **MVP complet.** Toutes les User Stories planifiées sont terminées et vérifiées concrètement (installation et mode hors ligne testés, pas seulement supposés).
 
@@ -40,15 +42,13 @@
 
 ### Epic : Gamification, succès à débloquer
 
-- Système de cartes/succès à débloquer façon Steam, selon des jalons (nombre de séances, fréquence, partie du corps, durée d'entraînement via US11)
-- Roster de 4 personnages originaux (pixel art) : bas du corps, haut du corps, vétéran (longévité, premier personnage esquissé : Patrick), personnage mystère (régularité, révélé progressivement)
-- Dépend de la segmentation `bodyPart` et de `Session` (US11)
-- Conception détaillée : journal, points 15-16
-
-- **US13** : En tant qu'utilisatrice, je veux un profil (nom d'affichage, avatar choisi parmi les personnages, succès débloqués visibles) afin de personnaliser mon expérience et visualiser ma progression de façon incarnée.
-  - Dépend d'US12 (identité visuelle) pour s'intégrer au bon style
-  - Rejoint le roster de personnages et le système de succès ci-dessus
-  - Conception : journal, point 28
+- **US13 (epic)** ✅ : En tant qu'utilisatrice, je veux un profil (nom d'affichage, stats, succès débloqués visibles) afin de personnaliser mon expérience et visualiser ma progression de façon incarnée.
+  - **US13.1** ✅ : Modèle Achievement et catalogue des 27 succès (5 personnages : coach, vétéran, haut du corps, bas du corps, mystère)
+  - **US13.2** ✅ : Moteur de calcul des succès (dérivé, non stocké, testé — 10 types de déclencheurs)
+  - **US13.3** ✅ : Profil minimal (nom d'affichage)
+  - **US13.4** ✅ : UI profil et galerie de succès, avec identité visuelle propre distincte du style terminal
+  - Illustrations des personnages restantes à produire (seul un croquis de Patrick, le vétéran, existe à ce stade) — architecture déjà prête à les recevoir sans changement de code (AchievementImage, fallback automatique)
+  - Conception : journal, points 15-16, 24-25, 33-35
 
 ### Epic : Catalogue d'exercices
 

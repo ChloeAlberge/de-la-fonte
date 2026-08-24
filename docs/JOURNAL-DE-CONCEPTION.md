@@ -236,6 +236,7 @@ function startSession(): Session {
 | US12 | Identité visuelle (epic, 5 sous-Issues) | ✅ |
 | US6/US7 | PWA installable et hors ligne | ✅ |
 | US14 | Catalogue d'exercices et bodyPart | ✅ |
+| US13 | Système de succès et profil (epic, 4 sous-Issues) | ✅ |
 
 **MVP complet.** Toutes les User Stories planifiées sont terminées.
 | US9 | Statistiques globales | ✅ |
@@ -467,7 +468,7 @@ Impact identifié si implémentée : nouveau modèle (`models/exercise.ts` ou é
 
 **Point noté, non traité** : le build de production signale un chunk JS de 557 Ko après minification (probablement `recharts`), au-delà du seuil d'avertissement de Vite. Non bloquant, identifié comme amélioration future (code-splitting) plutôt que traité immédiatement.
 
-**Statut** : ✅ Terminée. **Le MVP complet (US1-US5, US8-US12) est achevé.**
+**Statut** : ✅ Terminé et fonctionnel, vérifié en conditions réelles sur desktop (Windows/Chrome, build de production). **Non encore vérifié sur téléphone réel** — le test via réseau local avait été abandonné plus tôt (souci de pare-feu/profil réseau Windows non résolu), jamais repris depuis. Deux pistes identifiées pour clore ce point : corriger l'accès réseau local, ou déployer sur GitHub Pages pour tester via une URL publique. À faire avant de considérer US6/US7 comme pleinement validées pour l'usage réel visé (installation sur le téléphone de l'utilisatrice).
 
 ---
 
@@ -488,6 +489,34 @@ Impact identifié si implémentée : nouveau modèle (`models/exercise.ts` ou é
 **Point de méthode, plusieurs incidents de copier-coller en cours de session** : le tableau `EXERCISE_CATALOG` est resté vide (commentaire placeholder jamais remplacé) pendant plusieurs échanges avant d'être repéré via le comportement observé dans le navigateur (menu déroulant vide) plutôt que via une erreur de compilation. Un fichier de test (`SeriesList.test.tsx`) a également écrasé le contenu d'un autre (`seriesStats.test.ts`) par erreur de copier-coller, provoquant une cascade d'erreurs de syntaxe JSX dans un fichier `.ts`. Les deux corrigés en comparant le contenu réel des fichiers plutôt qu'en supposant leur état.
 
 **Statut** : ✅ Terminée.
+
+---
+
+## 34. US13.4 : UI profil et galerie de succès
+
+**Décision (architecture des composants)** : `ProfileSection` (nom, stats, bouton) et `AchievementModal` (grille de succès, agrandissement au clic) séparés plutôt qu'un seul gros composant, cohérent avec le découpage déjà pratiqué ailleurs dans le projet.
+
+**Décision (identité visuelle de la modale succès)** : `Modal` étendu avec une prop `variant?: 'terminal' | 'hud'` plutôt que de dupliquer le composant. Les formulaires de saisie gardent le style terminal par défaut (aucun changement requis sur `SeriesForm`/`CardioForm`), seule `AchievementModal` passe explicitement `variant="hud"` pour hériter des tokens du dashboard plutôt que de la palette phosphore verte.
+
+**Décision (images de succès)** : stratégie de fallback automatique (`AchievementImage`, utilisant l'événement `onError` natif du DOM) plutôt que d'attendre que tous les visuels existent avant de livrer la fonctionnalité. Chaque personnage a un chemin d'image prévu à l'avance (`/achievements/{character}.png`) ; en son absence, un placeholder générique (initiale) s'affiche automatiquement, sans qu'aucune modification de code ne soit nécessaire le jour où les vraies illustrations seront déposées dans `public/achievements/`.
+
+**Élargissement de scope, hors périmètre initial de la sous-Issue** : la session s'est prolongée sur un vrai passage d'identité visuelle (palette magenta, glow pulsé sur les panels, grille de fond, vignette CRT, sprite pixel animé, hover néon), motivé par un retour direct sur le manque de contraste et de personnalité de l'interface. Traité dans la même sous-Issue plutôt que d'ouvrir une nouvelle Issue dédiée, par pragmatisme (les deux touchaient les mêmes fichiers `App.css`/`App.tsx`).
+
+**Incident : sprite pixel art humanoïde non fonctionnel.** Une première tentative de personnage animé (silhouette humaine soulevant une barre, alternance de deux frames en `<rect>` SVG) s'est révélée visuellement cassée (rendu confus, illisible). Remplacée par une version simplifiée (une haltère, animée par translation plutôt que changement de forme), plus fiable sans prévisualisation possible en amont. À la demande explicite, le code humanoïde original a ensuite été restauré tel quel malgré son défaut connu, la préférence esthétique du concept l'emportant sur le rendu bogué constaté.
+
+**Incident : confusion terminologique `font-weight`.** Une série d'ajustements infructueux sur la graisse du texte de statut de séance (`font-weight`, jusqu'à une valeur invalide de 2000, silencieusement ignorée par le navigateur) provenait d'un malentendu : la demande portait en réalité sur la **taille** du texte, pas sa graisse. Résolu une fois la confusion clarifiée. Point non lié technique découvert en chemin : `Share Tech Mono` (police utilisée par cet élément) n'existe qu'en une seule graisse chez Google Fonts, rendant `font-weight` sans effet possible sur ce texte quelle que soit sa valeur.
+
+**Statut** : ✅ Terminée. **US13 (système de succès et profil) est intégralement complète.**
+
+---
+
+## 35. Point de méthode : `switch` exhaustif vs table de handlers (US13.2)
+
+**Contexte** : lors de l'écriture du moteur de calcul des succès (`isAchievementUnlocked`), une alternative au `switch (trigger.type)` a été envisagée — un objet de handlers indexé par type (`Record<AchievementTrigger['type'], (...) => boolean>`), pattern plus "déclaratif" et extensible visuellement.
+
+**Compromis identifié** : la table de handlers nécessite un cast TypeScript (`as (...)`) au moment de l'appel pour satisfaire le compilateur, ce qui **fait perdre la vérification d'exhaustivité** que garantit un `switch` (TypeScript détecte à la compilation si un cas de l'union n'est pas géré ; avec la table, un handler manquant ne serait détecté qu'à l'exécution).
+
+**Décision** : conservation du `switch`, la garantie d'exhaustivité étant jugée plus importante que la lisibilité en table pour un moteur de règles métier, où l'oubli d'un nouveau type de succès doit être détecté au plus tôt (à la compilation), pas silencieusement en production.
 
 ---
 
