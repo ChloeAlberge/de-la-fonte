@@ -176,7 +176,7 @@ input:focus {
   background: rgba(255, 45, 149, 0.25);
   border: 2px solid var(--color-magenta);
   color: var(--color-text);
-  font-weight: 800;
+  font-weight: 700;
   box-shadow: 0 0 12px rgba(255, 45, 149, 0.5);
 }
 
@@ -201,7 +201,7 @@ input:focus {
 }
 
 .session-status-text {
-  font-size: 1.1rem;
+  font-size: 1.3rem;
   color: var(--color-text);
   text-shadow: 0 0 6px rgba(238, 242, 251, 0.4);
 }
