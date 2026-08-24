@@ -4,6 +4,7 @@ import type { Session } from '../models/session';
 import { ACHIEVEMENTS, type Achievement, type Character } from '../models/achievement';
 import { computeUnlockedAchievements } from '../stats/achievementStats';
 import { Modal } from './Modal';
+import { AchievementImage } from './AchievementImage';
 
 interface AchievementModalProps {
   series: Series[];
@@ -34,7 +35,7 @@ export function AchievementModal({ series, sessions, onClose }: AchievementModal
   const unlockedIds = new Set(unlocked.map((a) => a.id));
 
   return (
-    <Modal onClose={onClose}>
+    <Modal onClose={onClose} variant="hud">
       <h2>Mes succès</h2>
 
       <div className="achievement-grid">
@@ -50,9 +51,10 @@ export function AchievementModal({ series, sessions, onClose }: AchievementModal
               className={`achievement-card ${isUnlocked ? 'achievement-unlocked' : 'achievement-locked'}`}
               onClick={() => setSelected(achievement)}
             >
-              <div className="achievement-placeholder">
-                {CHARACTER_INITIAL[achievement.character]}
-              </div>
+              <AchievementImage
+                character={achievement.character}
+                fallbackLabel={CHARACTER_INITIAL[achievement.character]}
+              />
               <span>{displayTitle}</span>
             </button>
           );
@@ -62,9 +64,11 @@ export function AchievementModal({ series, sessions, onClose }: AchievementModal
       {selected && (
         <div className="achievement-detail-overlay" onClick={() => setSelected(null)}>
           <div className="achievement-detail-card" onClick={(e) => e.stopPropagation()}>
-            <div className="achievement-placeholder achievement-placeholder-large">
-              {CHARACTER_INITIAL[selected.character]}
-            </div>
+            <AchievementImage
+              character={selected.character}
+              fallbackLabel={CHARACTER_INITIAL[selected.character]}
+              size="large"
+            />
             <h3>
               {selected.character === 'mystery' && !unlockedIds.has(selected.id)
                 ? '???'

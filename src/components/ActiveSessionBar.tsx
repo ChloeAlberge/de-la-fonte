@@ -25,16 +25,22 @@ export function ActiveSessionBar({ onSessionChange }: ActiveSessionBarProps) {
   if (!activeSession) {
     return (
       <div className="session-indicator">
-        <span className="session-dot" />
-        <button onClick={handleStart}>Démarrer une séance</button>
+        <div className="session-status-row">
+          <span className="session-dot" />
+          <button onClick={handleStart}>Démarrer une séance</button>
+        </div>
       </div>
     );
   }
 
   return (
     <div className="session-indicator">
-      <span className="session-dot active" />
-      <span>Séance en cours — démarrée à {new Date(activeSession.startedAt).toLocaleTimeString()}</span>
+      <div className="session-status-row">
+        <span className="session-dot active" />
+        <span className="session-status-text">
+          Séance en cours depuis {new Date(activeSession.startedAt).toLocaleTimeString()}
+        </span>
+      </div>
       <button onClick={handleEnd}>Terminer la séance</button>
     </div>
   );

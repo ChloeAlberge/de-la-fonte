@@ -5,6 +5,7 @@ import { ActiveSessionBar } from "./components/ActiveSessionBar";
 import { SeriesList } from "./components/SeriesList";
 import { ExerciseFilter } from "./components/ExerciseFilter";
 import { Modal } from "./components/Modal";
+import { PixelLifter } from "./components/PixelLifter";
 import { getAllSeries } from "./storage/seriesStorage";
 import { getUniqueExerciseNames, filterByExercise } from "./stats/seriesStats";
 import { FrequencyView } from "./components/FrequencyView";
@@ -36,12 +37,14 @@ function App() {
   return (
     <>
       <header className="app-header">
-        <h1>De la Fonte</h1>
+        <h1>
+          De la Fonte <PixelLifter />
+        </h1>
       </header>
       <ActiveSessionBar onSessionChange={refreshSeries} />
 
       <div className="panel">
-        <button onClick={() => setIsModalOpen(true)}>+ Ajouter</button>
+        <button onClick={() => setIsModalOpen(true)}>+ Ajouter un exercice</button>
       </div>
 
       {isModalOpen && (
@@ -62,11 +65,13 @@ function App() {
 
       <ProfileSection series={allSeries} />
 
-      <ExerciseFilter
-        exerciseNames={exerciseNames}
-        selected={selectedExercise}
-        onChange={setSelectedExercise}
-      />
+      <div className="panel">
+        <ExerciseFilter
+          exerciseNames={exerciseNames}
+          selected={selectedExercise}
+          onChange={setSelectedExercise}
+        />
+      </div>
 
       <ProgressChart series={allSeries} exerciseName={selectedExercise} />
 

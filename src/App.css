@@ -3,10 +3,11 @@
    ========================================================================== */
 
 :root {
-  --color-void: #020309;
-  --color-deep: #0b1026;
+  --color-void: #0f1420;
+  --color-deep: #050813;
   --color-neon-cyan: #27b0ff;
   --color-neon-violet: #6e00ff;
+  --color-magenta: #ff2d95;
   --color-chrome: #9aa5b8;
   --color-text: #eef2fb;
 
@@ -26,10 +27,32 @@
 
 body {
   margin: 0;
+  padding: 0 0.75rem;
   background-color: var(--color-void);
   color: var(--color-text);
   font-family: var(--font-body);
   line-height: 1.5;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(39, 176, 255, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(39, 176, 255, 0.06) 1px, transparent 1px);
+  background-size: 40px 40px;
+  pointer-events: none;
+  z-index: -1;
+}
+
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(ellipse at center, transparent 55%, rgba(0, 0, 0, 0.55) 100%);
+  pointer-events: none;
+  z-index: 50;
 }
 
 h1, h2, h3 {
@@ -46,6 +69,48 @@ button {
   padding: 0.5rem 1rem;
   font-family: var(--font-body);
   font-size: 0.95rem;
+  transition: box-shadow 150ms ease, border-color 150ms ease;
+}
+
+button:hover,
+button:focus-visible {
+  box-shadow: 0 0 10px rgba(39, 176, 255, 0.7);
+  border-color: var(--color-neon-cyan);
+}
+
+label {
+  display: block;
+  margin: 0.9rem 0 0.4rem;
+  font-size: 0.85rem;
+  color: var(--color-chrome);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+select,
+input:not([type="radio"]) {
+  min-height: 44px;
+  padding: 0.4rem 0.6rem;
+  width: 100%;
+  background: var(--color-void);
+  color: var(--color-text);
+  border: 1px solid var(--color-chrome);
+  border-radius: 4px;
+  font-family: var(--font-body);
+}
+
+select:focus,
+input:focus {
+  outline: none;
+  border-color: var(--color-neon-cyan);
+  box-shadow: 0 0 6px rgba(39, 176, 255, 0.5);
+}
+
+.text-chrome {
+  background: linear-gradient(180deg, #eef2fb 0%, #9aa5b8 45%, #eef2fb 55%, #6b7280 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
 }
 
 /* ==========================================================================
@@ -57,7 +122,7 @@ button {
   flex-direction: column;
   align-items: flex-start;
   gap: 0.75rem;
-  padding: 1rem;
+  padding: 1.25rem 1rem;
   border-bottom: 1px solid var(--color-chrome);
 }
 
@@ -66,16 +131,59 @@ button {
   color: var(--color-neon-cyan);
   text-shadow: 0 0 12px rgba(39, 176, 255, 0.6);
   margin: 0;
+  display: flex;
+  align-items: center;
+}
+
+.pixel-lifter {
+  display: inline-block;
+  vertical-align: middle;
+  margin-left: 0.5rem;
+  image-rendering: pixelated;
+}
+
+.pixel-lifter-frame-a,
+.pixel-lifter-frame-b {
+  fill: var(--color-neon-cyan);
+}
+
+.pixel-lifter-frame-a {
+  animation: lifter-toggle-a 800ms steps(1, end) infinite;
+}
+
+.pixel-lifter-frame-b {
+  animation: lifter-toggle-b 800ms steps(1, end) infinite;
 }
 
 .session-indicator {
   display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.5rem;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.6rem;
   font-family: var(--font-data);
   font-size: 0.85rem;
   width: 100%;
+  margin: 1.25rem 0.75rem 0.75rem;
+}
+
+.session-status-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.session-indicator button {
+  background: rgba(255, 45, 149, 0.25);
+  border: 2px solid var(--color-magenta);
+  color: var(--color-text);
+  font-weight: 800;
+  box-shadow: 0 0 12px rgba(255, 45, 149, 0.5);
+}
+
+.session-indicator button:hover,
+.session-indicator button:focus-visible {
+  background: rgba(255, 45, 149, 0.35);
+  box-shadow: 0 0 18px rgba(255, 45, 149, 0.8);
 }
 
 .session-dot {
@@ -92,33 +200,45 @@ button {
   animation: pulse 1.6s ease-in-out infinite;
 }
 
+.session-status-text {
+  font-size: 1.1rem;
+  color: var(--color-text);
+  text-shadow: 0 0 6px rgba(238, 242, 251, 0.4);
+}
+
 .panel {
   background: var(--color-deep);
   border: 1px solid var(--color-chrome);
   border-radius: 4px;
-  padding: 1rem;
-  margin: 0.75rem;
+  padding: 1.5rem;
+  margin: 1.25rem 0.75rem;
+  animation: panel-glow 3.5s ease-in-out infinite;
 }
 
 .panel h2, .panel h3 {
   font-size: 1rem;
   color: var(--color-neon-cyan);
-  border-bottom: 1px solid rgba(39, 176, 255, 0.3);
-  padding-bottom: 0.5rem;
+  border-bottom: 2px dashed rgba(39, 176, 255, 0.35);
+  padding-bottom: 0.6rem;
   margin-top: 0;
+  margin-bottom: 1rem;
+}
+
+.stats-grid + h3 {
+  margin-top: 1.75rem;
 }
 
 .stats-grid {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 0.75rem;
+  gap: 1rem;
 }
 
 .stat-tile {
   background: var(--color-void);
   border: 1px solid var(--color-neon-cyan);
   border-radius: 4px;
-  padding: 0.75rem;
+  padding: 0.9rem;
 }
 
 .stat-tile .stat-label {
@@ -140,13 +260,13 @@ button {
   padding: 0;
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 0.75rem;
 }
 
 .series-list li {
   background: var(--color-void);
   border-left: 3px solid var(--color-neon-cyan);
-  padding: 0.75rem;
+  padding: 0.9rem;
   border-radius: 2px;
 }
 
@@ -169,20 +289,30 @@ button {
 
 .series-actions {
   display: flex;
-  gap: 0.5rem;
-  margin-top: 0.5rem;
+  gap: 0.6rem;
+  margin-top: 0.6rem;
 }
 
 .series-edit-form {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 0.6rem;
 }
 
-.series-edit-form input,
-.series-edit-form select {
-  min-height: 44px;
-  padding: 0.4rem 0.6rem;
+.profile-name {
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  background: linear-gradient(180deg, #eef2fb 0%, #9aa5b8 45%, #eef2fb 55%, #6b7280 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.profile-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin: 1rem 0;
 }
 
 /* ==========================================================================
@@ -204,7 +334,7 @@ button {
   background: var(--color-terminal-bg);
   border: 2px solid var(--color-terminal-green);
   box-shadow: 0 0 20px rgba(51, 255, 102, 0.4);
-  padding: 1.25rem;
+  padding: 1.5rem;
   width: 100%;
   max-width: 420px;
   max-height: 90vh;
@@ -237,10 +367,10 @@ button {
 }
 
 .terminal-modal label {
-  display: block;
+  color: var(--color-terminal-green);
   text-transform: uppercase;
   font-size: 1.1rem;
-  margin: 0.75rem 0 0.25rem;
+  margin: 0.9rem 0 0.3rem;
 }
 
 .terminal-modal label::before {
@@ -249,14 +379,11 @@ button {
 
 .terminal-modal input:not([type="radio"]),
 .terminal-modal select {
-  width: 100%;
   background: transparent;
   border: 1px solid var(--color-terminal-green-dim);
   color: var(--color-terminal-green);
   font-family: var(--font-terminal);
   font-size: 1.15rem;
-  padding: 0.4rem 0.6rem;
-  min-height: 44px;
   caret-color: var(--color-terminal-green);
 }
 
@@ -285,12 +412,14 @@ button {
 
 .terminal-modal button:hover {
   background: rgba(51, 255, 102, 0.15);
+  box-shadow: 0 0 10px rgba(51, 255, 102, 0.6);
+  border-color: var(--color-terminal-green);
 }
 
 .terminal-modal fieldset {
   border: 1px solid var(--color-terminal-green-dim);
-  margin: 0.75rem 0;
-  padding: 0.75rem;
+  margin: 0.9rem 0;
+  padding: 0.9rem;
 }
 
 .terminal-modal fieldset label {
@@ -299,6 +428,7 @@ button {
   gap: 0.5rem;
   text-transform: none;
   font-size: 1rem;
+  margin: 0;
 }
 
 .terminal-modal fieldset label::before {
@@ -312,15 +442,15 @@ button {
 
 .modal-type-toggle {
   display: flex;
-  gap: 0.5rem;
-  margin-bottom: 1rem;
+  gap: 0.6rem;
+  margin-bottom: 1.25rem;
 }
 
 .exercise-filter-buttons {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.4rem;
-  margin-bottom: 0.75rem;
+  gap: 0.5rem;
+  margin-bottom: 0.9rem;
 }
 
 .exercise-filter-buttons button {
@@ -355,12 +485,140 @@ button {
 }
 
 /* ==========================================================================
-   4. ANIMATIONS — pulsation séance, transition d'écran modale (US12.2, US12.5)
+   3bis. MODALE HUD — succès/profil, même famille visuelle que le dashboard
+   ========================================================================== */
+
+.hud-modal {
+  background: var(--color-deep);
+  border: 1px solid var(--color-neon-cyan);
+  box-shadow: 0 0 20px rgba(39, 176, 255, 0.3);
+  padding: 1.5rem;
+  width: 100%;
+  max-width: 480px;
+  max-height: 90vh;
+  overflow-y: auto;
+  font-family: var(--font-body);
+  color: var(--color-text);
+  position: relative;
+}
+
+.hud-modal h2,
+.hud-modal h3 {
+  font-family: var(--font-display);
+  color: var(--color-neon-cyan);
+}
+
+.achievement-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+  gap: 0.9rem;
+  margin-top: 1rem;
+}
+
+.achievement-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--color-void);
+  border: 1px solid var(--color-chrome);
+  border-radius: 4px;
+  padding: 0.75rem;
+  min-height: auto;
+  font-size: 0.75rem;
+  text-align: center;
+  color: var(--color-text);
+  transition: box-shadow 150ms ease;
+}
+
+.achievement-card.achievement-unlocked {
+  border-color: var(--color-neon-cyan);
+  box-shadow: 0 0 8px rgba(39, 176, 255, 0.3);
+}
+
+.achievement-card.achievement-locked {
+  opacity: 0.6;
+}
+
+.achievement-placeholder {
+  width: 48px;
+  height: 48px;
+  border-radius: 4px;
+  border: 1px solid var(--color-chrome);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  color: var(--color-chrome);
+}
+
+.achievement-placeholder-large {
+  width: 120px;
+  height: 120px;
+  font-size: 2rem;
+  margin: 0 auto 0.9rem;
+}
+
+.achievement-image {
+  width: 48px;
+  height: 48px;
+  border-radius: 4px;
+  object-fit: cover;
+}
+
+.achievement-image-large {
+  width: 120px;
+  height: 120px;
+  border-radius: 4px;
+  object-fit: cover;
+  margin: 0 auto 0.9rem;
+  display: block;
+}
+
+.achievement-detail-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(2, 3, 9, 0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+  padding: 1rem;
+}
+
+.achievement-detail-card {
+  background: var(--color-deep);
+  border: 1px solid var(--color-neon-cyan);
+  box-shadow: 0 0 20px rgba(39, 176, 255, 0.3);
+  border-radius: 4px;
+  padding: 1.5rem;
+  max-width: 320px;
+  text-align: center;
+}
+
+/* ==========================================================================
+   4. ANIMATIONS — pulsation séance, transition d'écran modale, sprite, glow panels
    ========================================================================== */
 
 @keyframes pulse {
   0%, 100% { opacity: 1; }
   50% { opacity: 0.4; }
+}
+
+@keyframes panel-glow {
+  0%, 100% { box-shadow: 0 0 0 rgba(39, 176, 255, 0); }
+  50% { box-shadow: 0 0 10px rgba(39, 176, 255, 0.25); }
+}
+
+@keyframes lifter-toggle-a {
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0; }
+}
+
+@keyframes lifter-toggle-b {
+  0%, 49% { opacity: 0; }
+  50%, 100% { opacity: 1; }
 }
 
 @keyframes screen-on {
@@ -421,11 +679,15 @@ button {
    ========================================================================== */
 
 @media (min-width: 640px) {
+  body {
+    padding: 0 1.5rem;
+  }
+
   .app-header {
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
-    padding: 1.5rem 2rem;
+    padding: 1.75rem 2rem;
   }
 
   .app-header h1 {
@@ -434,11 +696,12 @@ button {
 
   .session-indicator {
     width: auto;
+    margin: 1.5rem 2rem 1rem;
   }
 
   .panel {
-    margin: 1rem 2rem;
-    padding: 1.25rem;
+    margin: 1.5rem 2rem;
+    padding: 1.75rem;
   }
 
   .stats-grid {
