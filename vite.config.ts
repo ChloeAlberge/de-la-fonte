@@ -4,6 +4,7 @@ import react from '@vitejs/plugin-react'
 import { VitePWA } from 'vite-plugin-pwa'
 
 export default defineConfig({
+  base: '/de-la-fonte/',
   plugins: [
     react(),
     VitePWA({
@@ -12,7 +13,7 @@ export default defineConfig({
         name: 'De la Fonte',
         short_name: 'Fonte',
         description: 'Suivi de performances de musculation et cardio',
-        start_url: '/',
+        start_url: '/de-la-fonte/',
         display: 'standalone',
         background_color: '#020309',
         theme_color: '#020309',
