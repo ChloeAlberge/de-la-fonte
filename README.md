@@ -1,35 +1,47 @@
 # De la Fonte
 
-Application mobile (PWA) de suivi de performances de musculation : machine utilisée, poids soulevé, fréquence d'entraînement et évolution dans le temps.
+Application mobile (PWA) de suivi de performances de musculation et cardio : machine ou exercice utilisé, poids soulevé, fréquence d'entraînement, évolution dans le temps, et un système de succès à débloquer selon la progression.
 
-Projet personnel développé pour remplacer un suivi papier/notes par une appli installée sur téléphone, utilisable hors ligne à la salle.
+Voir [`docs/JOURNAL-DE-CONCEPTION.md`](docs/JOURNAL-DE-CONCEPTION.md) pour le détail des décisions d'architecture et leur justification, et [`docs/USER-STORIES.md`](docs/USER-STORIES.md) pour le périmètre fonctionnel.
 
-Voir [`docs/JOURNAL-DE-CONCEPTION.md`](docs/JOURNAL-DE-CONCEPTION.md) pour le détail des décisions techniques et leur justification, et [`docs/USER-STORIES.md`](docs/USER-STORIES.md) pour le périmètre fonctionnel détaillé.
+## Fonctionnalités
+
+- Suivi de séances de musculation (machine, poids libre, poids du corps) et de cardio
+- Catalogue de ~130 exercices avec autocomplétion et segmentation par partie du corps
+- Gestion de séances (démarrer/terminer), avec regroupement automatique des séries
+- Historique filtrable, fréquence par exercice et par type d'équipement
+- Statistiques globales (volume soulevé, séances par semaine, exercice le plus pratiqué)
+- Graphique de progression par exercice
+- Système de succès à débloquer (27 succès, 5 personnages), profil utilisateur
+- Installable comme une application (PWA), fonctionne hors connexion
 
 ## Stack technique
 
-| Domaine | Choix | Pourquoi (résumé — détail dans le journal) |
-|---|---|---|
-| Framework UI | React | Architecture non imposée → à concevoir et justifier soi-même |
-| Langage | TypeScript | Typage des contrats entre couches, rigueur attendue en architecture |
-| Build tool | Vite | Pas de SSR nécessaire (PWA offline-first, pas de SEO à gérer) |
-| Stockage (MVP) | `localStorage` | Suffisant pour un usage solo, pas de backend nécessaire au MVP |
-| Tests | Vitest | Intégré nativement à l'écosystème Vite |
-| CI | GitHub Actions | Lint + tests automatiques à chaque push |
+| Domaine | Choix |
+|---|---|
+| Framework UI | React |
+| Langage | TypeScript |
+| Build tool | Vite |
+| Stockage | `localStorage` |
+| Tests | Vitest, @testing-library/react |
+| PWA | vite-plugin-pwa |
+| Visualisation | Recharts |
 
-## Architecture (résumé)
+## Architecture
 
-Architecture en couches, pensée pour isoler le stockage du reste (pour pouvoir migrer `localStorage` → une API en V2 sans toucher l'UI) :
+Architecture en couches, isolant le stockage de la logique métier et de l'affichage :
 
 ```
 UI (composants React)
    ↓
-Logique dérivée / statistiques (calculs à partir des données)
+Statistiques (calculs dérivés)
    ↓
-Storage (accès aux données, actuellement localStorage)
+Storage (accès aux données)
    ↓
-Models (types TypeScript partagés)
+Models (types partagés)
 ```
+
+Modélisation par unions discriminées (types de séries, déclencheurs de succès) pour garantir à la compilation la cohérence des données selon leur variante. Détail complet dans le [journal de conception](docs/JOURNAL-DE-CONCEPTION.md).
 
 ## Installation
 
@@ -38,6 +50,14 @@ npm install
 npm run dev
 ```
 
-## Statut du projet
+## Tests
 
-En cours de conception — aucune ligne de code métier écrite pour l'instant, phase de spécification en cours.
+```bash
+npm test
+```
+
+## Build
+
+```bash
+npm run build
+```
