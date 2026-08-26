@@ -4,6 +4,8 @@ Application mobile (PWA) de suivi de performances de musculation et cardio : mac
 
 Voir [`docs/JOURNAL-DE-CONCEPTION.md`](docs/JOURNAL-DE-CONCEPTION.md) pour le détail des décisions d'architecture et leur justification, et [`docs/USER-STORIES.md`](docs/USER-STORIES.md) pour le périmètre fonctionnel.
 
+**Démo en ligne** : [chloealberge.github.io/de-la-fonte](https://chloealberge.github.io/de-la-fonte/)
+
 ## Fonctionnalités
 
 - Suivi de séances de musculation (machine, poids libre, poids du corps) et de cardio

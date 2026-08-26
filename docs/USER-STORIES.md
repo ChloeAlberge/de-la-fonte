@@ -31,10 +31,10 @@
 
 ### Epic : Expérience mobile
 
-- **US6** ⚠️ : En tant qu'utilisateur, je veux installer l'appli sur mon écran d'accueil afin d'y accéder comme une vraie appli.
-  - Vérifié sur desktop (Windows/Chrome). **Non encore testé sur téléphone réel** — à faire (réseau local ou déploiement GitHub Pages).
-- **US7** ⚠️ : En tant qu'utilisateur, je veux pouvoir enregistrer une série sans connexion réseau afin de l'utiliser à la salle où le signal est mauvais.
-  - Mode hors ligne vérifié sur desktop (DevTools Offline). **Non encore testé sur téléphone réel.**
+- **US6** ✅ : En tant qu'utilisateur, je veux installer l'appli sur mon écran d'accueil afin d'y accéder comme une vraie appli.
+  - Déployé sur GitHub Pages, installation confirmée sur téléphone réel.
+- **US7** ✅ : En tant qu'utilisateur, je veux pouvoir enregistrer une série sans connexion réseau afin de l'utiliser à la salle où le signal est mauvais.
+  - Mode hors ligne confirmé sur téléphone réel (mode avion).
 
 **MVP complet.** Toutes les User Stories planifiées sont terminées et vérifiées concrètement (installation et mode hors ligne testés, pas seulement supposés).
 
