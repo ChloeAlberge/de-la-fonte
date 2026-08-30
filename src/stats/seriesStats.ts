@@ -165,3 +165,7 @@ export function computeProgressionForExercise(
     }))
     .sort((a, b) => a.date.localeCompare(b.date));
 }
+
+export function filterByDate(series: Series[], date: string): Series[] {
+  return series.filter((s) => s.performedAt.startsWith(date));
+}

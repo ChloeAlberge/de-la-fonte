@@ -7,7 +7,7 @@ import { ExerciseFilter } from "./components/ExerciseFilter";
 import { Modal } from "./components/Modal";
 import { PixelLifter } from "./components/PixelLifter";
 import { getAllSeries } from "./storage/seriesStorage";
-import { getUniqueExerciseNames, filterByExercise } from "./stats/seriesStats";
+import { getUniqueExerciseNames, filterByExercise, filterByDate } from "./stats/seriesStats";
 import { FrequencyView } from "./components/FrequencyView";
 import { StatsSummary } from "./components/StatsSummary";
 import { ProgressChart } from "./components/ProgressChart";
@@ -18,6 +18,7 @@ function App() {
   const [allSeries, setAllSeries] = useState(() => getAllSeries());
   const [entryType, setEntryType] = useState<"strength" | "cardio">("strength");
   const [selectedExercise, setSelectedExercise] = useState<string | null>(null);
+  const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   function refreshSeries() {
@@ -30,9 +31,16 @@ function App() {
   }
 
   const exerciseNames = getUniqueExerciseNames(allSeries);
-  const displayedSeries = selectedExercise
-    ? filterByExercise(allSeries, selectedExercise)
-    : allSeries;
+
+  const hasActiveFilter = selectedExercise !== null || selectedDate !== null;
+
+  let displayedSeries = allSeries;
+  if (selectedExercise) {
+    displayedSeries = filterByExercise(displayedSeries, selectedExercise);
+  }
+  if (selectedDate) {
+    displayedSeries = filterByDate(displayedSeries, selectedDate);
+  }
 
   return (
     <>
@@ -71,11 +79,33 @@ function App() {
           selected={selectedExercise}
           onChange={setSelectedExercise}
         />
+
+        <label>
+          Filtrer par date
+          <input
+            type="date"
+            value={selectedDate ?? ''}
+            onChange={(e) => setSelectedDate(e.target.value === '' ? null : e.target.value)}
+          />
+        </label>
+
+        {(selectedExercise || selectedDate) && (
+          <button onClick={() => { setSelectedExercise(null); setSelectedDate(null); }}>
+            Réinitialiser les filtres
+          </button>
+        )}
       </div>
 
       <ProgressChart series={allSeries} exerciseName={selectedExercise} />
 
-      <SeriesList series={displayedSeries} onSeriesChanged={refreshSeries} />
+      <div className="panel">
+        {hasActiveFilter ? (
+          <SeriesList series={displayedSeries} onSeriesChanged={refreshSeries} />
+        ) : (
+          <p>Sélectionnez un filtre (exercice ou date) pour afficher l'historique.</p>
+        )}
+      </div>
+
       <FrequencyView series={allSeries} />
       <StatsSummary series={allSeries} />
     </>
