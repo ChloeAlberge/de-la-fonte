@@ -281,7 +281,7 @@ input:focus {
 .series-list li {
   background: var(--color-void);
   border-left: 3px solid var(--color-neon-cyan);
-  padding: 0.9rem;
+  padding: 0.6rem;
   border-radius: 2px;
   overflow: hidden;
 }
