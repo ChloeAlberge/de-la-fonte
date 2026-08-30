@@ -7,7 +7,11 @@ import { ExerciseFilter } from "./components/ExerciseFilter";
 import { Modal } from "./components/Modal";
 import { PixelLifter } from "./components/PixelLifter";
 import { getAllSeries } from "./storage/seriesStorage";
-import { getUniqueExerciseNames, filterByExercise, filterByDate } from "./stats/seriesStats";
+import {
+  getUniqueExerciseNames,
+  filterByExercise,
+  filterByDate,
+} from "./stats/seriesStats";
 import { FrequencyView } from "./components/FrequencyView";
 import { StatsSummary } from "./components/StatsSummary";
 import { ProgressChart } from "./components/ProgressChart";
@@ -52,14 +56,18 @@ function App() {
       <ActiveSessionBar onSessionChange={refreshSeries} />
 
       <div className="panel">
-        <button onClick={() => setIsModalOpen(true)}>+ Ajouter un exercice</button>
+        <button onClick={() => setIsModalOpen(true)}>
+          + Ajouter un exercice
+        </button>
       </div>
 
       {isModalOpen && (
         <Modal onClose={() => setIsModalOpen(false)}>
           <h2>Nouvelle entrée</h2>
           <div className="modal-type-toggle">
-            <button onClick={() => setEntryType("strength")}>Musculation</button>
+            <button onClick={() => setEntryType("strength")}>
+              Musculation
+            </button>
             <button onClick={() => setEntryType("cardio")}>Cardio</button>
           </div>
 
@@ -84,13 +92,20 @@ function App() {
           Filtrer par date
           <input
             type="date"
-            value={selectedDate ?? ''}
-            onChange={(e) => setSelectedDate(e.target.value === '' ? null : e.target.value)}
+            value={selectedDate ?? ""}
+            onChange={(e) =>
+              setSelectedDate(e.target.value === "" ? null : e.target.value)
+            }
           />
         </label>
 
         {(selectedExercise || selectedDate) && (
-          <button onClick={() => { setSelectedExercise(null); setSelectedDate(null); }}>
+          <button
+            onClick={() => {
+              setSelectedExercise(null);
+              setSelectedDate(null);
+            }}
+          >
             Réinitialiser les filtres
           </button>
         )}
@@ -98,13 +113,16 @@ function App() {
 
       <ProgressChart series={allSeries} exerciseName={selectedExercise} />
 
-      <div className="panel">
-        {hasActiveFilter ? (
-          <SeriesList series={displayedSeries} onSeriesChanged={refreshSeries} />
-        ) : (
-          <p>Sélectionnez un filtre (exercice ou date) pour afficher l'historique.</p>
-        )}
-      </div>
+      {hasActiveFilter ? (
+        <SeriesList series={displayedSeries} onSeriesChanged={refreshSeries} />
+      ) : (
+        <div className="panel">
+          <p>
+            Sélectionnez un filtre (exercice ou date) pour afficher
+            l'historique.
+          </p>
+        </div>
+      )}
 
       <FrequencyView series={allSeries} />
       <StatsSummary series={allSeries} />
