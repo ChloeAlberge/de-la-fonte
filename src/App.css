@@ -15,10 +15,10 @@
   --color-terminal-green: #33ff66;
   --color-terminal-green-dim: #1a8033;
 
-  --font-display: 'Orbitron', sans-serif;
-  --font-body: 'Chakra Petch', sans-serif;
-  --font-data: 'Share Tech Mono', monospace;
-  --font-terminal: 'VT323', monospace;
+  --font-display: "Orbitron", sans-serif;
+  --font-body: "Chakra Petch", sans-serif;
+  --font-data: "Share Tech Mono", monospace;
+  --font-terminal: "VT323", monospace;
 }
 
 * {
@@ -35,7 +35,7 @@ body {
 }
 
 body::before {
-  content: '';
+  content: "";
   position: fixed;
   inset: 0;
   background-image:
@@ -47,15 +47,21 @@ body::before {
 }
 
 body::after {
-  content: '';
+  content: "";
   position: fixed;
   inset: 0;
-  background: radial-gradient(ellipse at center, transparent 55%, rgba(0, 0, 0, 0.55) 100%);
+  background: radial-gradient(
+    ellipse at center,
+    transparent 55%,
+    rgba(0, 0, 0, 0.55) 100%
+  );
   pointer-events: none;
   z-index: 50;
 }
 
-h1, h2, h3 {
+h1,
+h2,
+h3 {
   font-family: var(--font-display);
   letter-spacing: 0.05em;
 }
@@ -69,7 +75,9 @@ button {
   padding: 0.5rem 1rem;
   font-family: var(--font-body);
   font-size: 0.95rem;
-  transition: box-shadow 150ms ease, border-color 150ms ease;
+  transition:
+    box-shadow 150ms ease,
+    border-color 150ms ease;
 }
 
 button:hover,
@@ -107,7 +115,13 @@ input:focus {
 }
 
 .text-chrome {
-  background: linear-gradient(180deg, #eef2fb 0%, #9aa5b8 45%, #eef2fb 55%, #6b7280 100%);
+  background: linear-gradient(
+    180deg,
+    #eef2fb 0%,
+    #9aa5b8 45%,
+    #eef2fb 55%,
+    #6b7280 100%
+  );
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
@@ -215,7 +229,8 @@ input:focus {
   animation: panel-glow 3.5s ease-in-out infinite;
 }
 
-.panel h2, .panel h3 {
+.panel h2,
+.panel h3 {
   font-size: 1rem;
   color: var(--color-neon-cyan);
   border-bottom: 2px dashed rgba(39, 176, 255, 0.35);
@@ -268,6 +283,7 @@ input:focus {
   border-left: 3px solid var(--color-neon-cyan);
   padding: 0.9rem;
   border-radius: 2px;
+  overflow: hidden;
 }
 
 .series-entry-name {
@@ -292,11 +308,13 @@ input:focus {
   flex-wrap: wrap;
   gap: 0.6rem;
   margin-top: 0.6rem;
+  width: 100%;
 }
 
 .series-actions button {
-  flex: 1;
+  flex: 1 1 0;
   min-width: 0;
+  box-sizing: border-box;
 }
 
 .series-edit-form {
@@ -308,7 +326,13 @@ input:focus {
 .profile-name {
   font-family: var(--font-display);
   font-size: 1.2rem;
-  background: linear-gradient(180deg, #eef2fb 0%, #9aa5b8 45%, #eef2fb 55%, #6b7280 100%);
+  background: linear-gradient(
+    180deg,
+    #eef2fb 0%,
+    #9aa5b8 45%,
+    #eef2fb 55%,
+    #6b7280 100%
+  );
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
@@ -351,7 +375,7 @@ input:focus {
 }
 
 .terminal-modal::before {
-  content: '';
+  content: "";
   position: absolute;
   inset: 0;
   pointer-events: none;
@@ -380,7 +404,7 @@ input:focus {
 }
 
 .terminal-modal label::before {
-  content: '> ';
+  content: "> ";
 }
 
 .terminal-modal input:not([type="radio"]),
@@ -438,7 +462,7 @@ input:focus {
 }
 
 .terminal-modal fieldset label::before {
-  content: '';
+  content: "";
 }
 
 .terminal-modal legend {
@@ -608,23 +632,45 @@ input:focus {
    ========================================================================== */
 
 @keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.4; }
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.4;
+  }
 }
 
 @keyframes panel-glow {
-  0%, 100% { box-shadow: 0 0 0 rgba(39, 176, 255, 0); }
-  50% { box-shadow: 0 0 10px rgba(39, 176, 255, 0.25); }
+  0%,
+  100% {
+    box-shadow: 0 0 0 rgba(39, 176, 255, 0);
+  }
+  50% {
+    box-shadow: 0 0 10px rgba(39, 176, 255, 0.25);
+  }
 }
 
 @keyframes lifter-toggle-a {
-  0%, 49% { opacity: 1; }
-  50%, 100% { opacity: 0; }
+  0%,
+  49% {
+    opacity: 1;
+  }
+  50%,
+  100% {
+    opacity: 0;
+  }
 }
 
 @keyframes lifter-toggle-b {
-  0%, 49% { opacity: 0; }
-  50%, 100% { opacity: 1; }
+  0%,
+  49% {
+    opacity: 0;
+  }
+  50%,
+  100% {
+    opacity: 1;
+  }
 }
 
 @keyframes screen-on {
@@ -662,8 +708,12 @@ input:focus {
 }
 
 @keyframes overlay-fade {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 .modal-opening {
