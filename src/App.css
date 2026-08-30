@@ -289,8 +289,14 @@ input:focus {
 
 .series-actions {
   display: flex;
+  flex-wrap: wrap;
   gap: 0.6rem;
   margin-top: 0.6rem;
+}
+
+.series-actions button {
+  flex: 1;
+  min-width: 0;
 }
 
 .series-edit-form {
