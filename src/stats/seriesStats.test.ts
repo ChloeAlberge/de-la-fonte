@@ -4,6 +4,7 @@ import {
   computeFrequencyByEquipmentType,
   getUniqueExerciseNames,
   filterByExercise,
+  filterByDate,
   computeAverageWeeklySessionCount,
   computeCurrentWeekSessionCount,
   computeMostUsedExercise,
@@ -269,5 +270,19 @@ describe('computeProgressionForExercise', () => {
       { date: '2026-08-11', weightKg: 91 },
       { date: '2026-08-12', weightKg: 91 },
     ]);
+  });
+});
+
+describe('filterByDate', () => {
+  it('ne renvoie que les séries du jour précis', () => {
+    const result = filterByDate([legPress, running, squat], '2026-08-12');
+
+    expect(result).toHaveLength(3);
+  });
+
+  it('renvoie un tableau vide si aucune série ne correspond à la date', () => {
+    const result = filterByDate([legPress], '2020-01-01');
+
+    expect(result).toEqual([]);
   });
 });
